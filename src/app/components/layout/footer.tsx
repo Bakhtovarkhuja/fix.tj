@@ -1,100 +1,80 @@
-import { Box, Container, Grid, Typography, Link as MuiLink, IconButton } from "@mui/material"
-import { Facebook, Instagram, Twitter } from "lucide-react"
 import Link from "next/link"
+import { Facebook, Instagram, Twitter, Phone, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
-    <Box sx={{ backgroundColor: "#1f2937", color: "#f3f4f6", py: 6 }}>
-      <Container maxWidth="lg">
-          {/* Company Info */}
-            <Typography variant="h4" component="h3" sx={{ fontWeight: "bold", color: "#2563eb", mb: 2 }}>
-              МастерСервис
-            </Typography>
-				<div className='flex justify-between'>
-	<div className='w-[40%]'>
-<Typography variant="h6" component="h4" sx={{ color: "white", mb: 2, fontWeight: 600 }}>
-              МастерСервис
-            </Typography>
-            <Typography variant="body1" sx={{ color: "#9ca3af", mb: 2, lineHeight: 1.6 }}>
-              Лучшая платформа для поиска квалифицированных мастеров. Мы соединяем клиентов с проверенными специалистами
-              для решения любых бытовых задач.
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <IconButton sx={{ color: "#9ca3af", "&:hover": { color: "#2563eb", backgroundColor: "#374151" } }}>
-                <Facebook size={20} />
-              </IconButton>
-              <IconButton sx={{ color: "#9ca3af", "&:hover": { color: "#2563eb", backgroundColor: "#374151" } }}>
-                <Instagram size={20} />
-              </IconButton>
-              <IconButton sx={{ color: "#9ca3af", "&:hover": { color: "#2563eb", backgroundColor: "#374151" } }}>
-                <Twitter size={20} />
-              </IconButton>
-            </Box>
-	</div>
-	<div className='30%'>
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">F</span>
+              </div>
+              <span className="text-2xl font-bold text-red-500">FIX.TJ</span>
+            </div>
+            <p className="text-gray-300 mb-4 max-w-md">
+              FIX.TJ платформаи пешқадами хидматрасонии Тоҷикистон мебошад, ки устодони моҳир ва муштариёнро пайваст
+              мекунад. Мутахассисони боэътимодро барои ҳамаи ниёзҳои хонагӣ ва тиҷоратии худ пайдо кунед.
+            </p>
+            <div className="flex space-x-4">
+              <Link href="#" className="text-gray-400 hover:text-red-500 transition-colors">
+                <Facebook className="h-6 w-6" />
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-red-500 transition-colors">
+                <Instagram className="h-6 w-6" />
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-red-500 transition-colors">
+                <Twitter className="h-6 w-6" />
+              </Link>
+            </div>
+          </div>
 
-            <Typography variant="h6" component="h4" sx={{ color: "white", mb: 2, fontWeight: 600 }}>
-              Быстрые ссылки
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <Link href="/" passHref>
-                
-                  Главная
-                
-              </Link>
-              <Link href="/products" passHref>
-                
-                  Запчасти
-                
-              </Link>
-              <Link href="/about" passHref>
-                
-                  О нас
-                
-              </Link>
-              <Link href="/favorites" passHref>
-                
-                  Избранное
-                
-              </Link>
-              <Link href="/orders" passHref>
-                
-                  Мои заказы
-                
-              </Link>
-            </Box>
-	</div>
-	<div className='w-[30%]'>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Пайвандҳои зуд</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/" className="text-gray-300 hover:text-red-500 transition-colors">
+                  Асосӣ
+                </Link>
+              </li>
+              <li>
+                <Link href="/products" className="text-gray-300 hover:text-red-500 transition-colors">
+                  Маҳсулот
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-300 hover:text-red-500 transition-colors">
+                  Дар бораи мо
+                </Link>
+              </li>
+              <li>
+                <Link href="/register" className="text-gray-300 hover:text-red-500 transition-colors">
+                  Ҳамчун устод ҳамроҳ шавед
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            <Typography variant="h6" component="h4" sx={{ color: "white", mb: 2, fontWeight: 600 }}>
-              Поддержка
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              
-                Помощь
-              
-              
-                Контакты
-              
-              
-                Политика конфиденциальности
-              
-              
-                Условия использования
-              
-              
-                FAQ
-              
-            </Box>
-	</div>
-				</div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Тамос</h3>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Phone className="h-4 w-4 text-red-500" />
+                <span className="text-gray-300">+992 123 456 789</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Mail className="h-4 w-4 text-red-500" />
+                <span className="text-gray-300">info@fix.tj</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <Box sx={{ borderTop: "1px solid #374151", mt: 4, pt: 4, textAlign: "center" }}>
-          <Typography variant="body2" sx={{ color: "#9ca3af" }}>
-            © 2024 МастерСервис. Все права защищены.
-          </Typography>
-        </Box>
-      </Container>
-    </Box>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+          <p className="text-gray-400">© {new Date().getFullYear()} FIX.TJ. Ҳамаи ҳуқуқҳо ҳифз шудаанд.</p>
+        </div>
+      </div>
+    </footer>
   )
 }

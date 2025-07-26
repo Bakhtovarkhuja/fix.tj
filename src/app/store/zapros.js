@@ -81,9 +81,9 @@ export const useZapros = create((set, get) => ({
 			console.error(error);
 		}
 	},
-	filterByName: async (country) => {
+	filterByName: async (name) => {
 		try {
-			const { data } = await axios.get('https://334768101201ee08.mokky.dev/users?name=' + country)
+			const { data } = await axios.get('https://334768101201ee08.mokky.dev/users?name=' + name)
 			set({users: data})
 		} catch (error) {
 			console.error(error);

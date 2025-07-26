@@ -1,335 +1,204 @@
 'use client'
 
-import type React from 'react'
-
 import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
-	Container,
-	Typography,
-	Box,
-	TextField,
-	FormControl,
-	InputLabel,
 	Select,
-	MenuItem,
-	Button,
-	Card,
-	CardContent,
-	Grid,
-	Chip,
-	IconButton,
-	Slider,
-	InputAdornment,
-	Avatar,
-} from '@mui/material'
-import { Search, Filter, Star, MapPin, Heart } from 'lucide-react'
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
+import { Search, Star, MapPin, Clock } from 'lucide-react'
 import Link from 'next/link'
-import Main from '../components/container/main'
-import useZapros from '../store/zapros'
-import Image from 'next/image'
 import avatar from '@/app/assets/avatar.png'
-import StarBorderIcon from '@mui/icons-material/StarBorder'
-import StarIcon from '@mui/icons-material/Star'
-import { LocationOn } from '@mui/icons-material'
+import baner from '@/app/assets/baner.jpg'
+import Image from 'next/image'
+import useZapros from '@/app/store/zapros'
 
-const categories = [
-	'Ремонт холодильников',
-	'Автоэлектрик',
-	'Сантехник',
-	'Электрик',
-	'Ремонт стиральных машин',
-	'Ремонт телевизоров',
-]
-
-const locations = [
-	,
-	'Москва',
-	'Санкт-Петербург',
-	'Екатеринбург',
-	'Новосибирск',
-	'Казань',
-]
-
-export default function Home() {
-	const {
+export default function HomePage() {
+  const {
 		users,
 		getUsers,
-		changeWishStatus,
 		filterByExperiense,
 		filterByCountry,
 		filterByJob,
 		filterByName,
 	} = useZapros()
 	const [searchTerm, setSearchTerm] = useState('')
-	const [selectedCategory, setSelectedCategory] = useState('')
-	const [selectedLocation, setSelectedLocation] = useState('')
-	const [experienceRange, setExperienceRange] = useState([0])
+	const [selectedProfession, setSelectedProfession] = useState('all')
+	const [selectedStatus, setSelectedStatus] = useState('all')
 
-	const addToWish = (el) => {
-		const user = {
-			...el,
-			wish: !el.wish,
-		}
-
-		changeWishStatus(el.id, user)
-	}
-
-	const handleSeeAll = () => {
-		setSearchTerm('')
-		setSelectedCategory('')
-		setSelectedLocation('')
-		setExperienceRange([0])
-		getUsers()
-	}
-
-	const handleFilter = () => {
-		filterByExperiense(experienceRange)
-		filterByCountry(selectedLocation)
-		filterByJob(selectedCategory)
-		filterByName(searchTerm)
-	}
-
-	useEffect(() => {
-		getUsers()
-	}, [])
+  useEffect(() => {
+    getUsers()
+  },[])
 
 	return (
-		<Main>
-			<Container maxWidth='xl'>
-				<Box sx={{ textAlign: 'center', mb: 6 }}>
-					<Typography
-						variant='h3'
-						component='h1'
-						sx={{ fontWeight: 'bold', color: '#1f2937', mb: 2 }}
-					>
-						Найдите лучших мастеров
-					</Typography>
-					<Typography
-						variant='h6'
-						sx={{ color: '#6b7280', maxWidth: '800px', mx: 'auto' }}
-					>
-						Профессиональные мастера для ремонта техники и решения бытовых
-						проблем
-					</Typography>
-				</Box>
+		<div className='min-h-screen'>
+			{/* Hero Section */}
+			<section className='relative w-[100%] h-[600px] flex items-center justify-center overflow-hidden'>
+				<div className='absolute inset-0 bg-cover bg-center bg-no-repeat'>
+					<Image
+						src={baner}
+						alt='Banner'
+						fill
+						className='object-cover object-center absolute inset-0 z-0'
+					/>
 
-				<Card sx={{ mb: 4, borderRadius: 3, border: '1px solid #e5e7eb' }}>
-					<CardContent sx={{ p: 3 }}>
-						<div className='flex gap-[25px] items-start'>
-							<div className='w-[20%]'>
-								<TextField
-									fullWidth
-									placeholder='Поиск мастеров...'
-									value={searchTerm}
-									onChange={e => setSearchTerm(e.target.value)}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position='start'>
-												<Search size={20} color='#6b7280' />
-											</InputAdornment>
-										),
-									}}
-								/>
-							</div>
-							<div className='w-[20%]'>
-								<FormControl fullWidth>
-									<InputLabel>Категория</InputLabel>
-									<Select
-										value={selectedCategory}
-										onChange={e => setSelectedCategory(e.target.value)}
-										label='Категория'
-									>
-										{categories.map(category => (
-											<MenuItem key={category} value={category}>
-												{category}
-											</MenuItem>
-										))}
-									</Select>
-								</FormControl>
-							</div>
-							<div className='w-[20%]'>
-								<FormControl fullWidth>
-									<InputLabel>Город</InputLabel>
-									<Select
-										value={selectedLocation}
-										onChange={e => setSelectedLocation(e.target.value)}
-										label='Город'
-									>
-										{locations.map(location => (
-											<MenuItem key={location} value={location}>
-												{location}
-											</MenuItem>
-										))}
-									</Select>
-								</FormControl>
-							</div>
-							<div className='w-[20%]'>
-								<Box>
-									<Typography
-										variant='body2'
-										sx={{ color: '#1f2937', mb: 1, fontWeight: 500 }}
-									>
-										Опыт: от {experienceRange[0]} лет
-									</Typography>
-									<Slider
-										value={experienceRange}
-										onChange={(_, newValue) =>
-											setExperienceRange(newValue as number[])
-										}
-										max={20}
-										min={0}
-										step={1}
-										color='primary'
-									/>
-								</Box>
-							</div>
-							<div className='w-[20%]'>
-								<Button
-									fullWidth
-									variant='contained'
-									onClick={handleFilter}
-									startIcon={<Filter size={16} />}
-									sx={{ py: 1.5 }}
-								>
-									Применить
-								</Button>
-							</div>
-							<div className='w-[15%]'>
-								<Button
-									fullWidth
-									variant='contained'
-									onClick={() => handleSeeAll()}
-									startIcon={<Filter size={16} />}
-									sx={{ py: 1.5 }}
-								>
-									See All
-								</Button>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
-					{users
-						.filter(user => user.role === 'master')
-						.map(el => (
-							<div
-								key={el.id}
-								className='w-full p-2 transition-transform transform hover:-translate-y-1'
-							>
-								<Card
-									sx={{
-										borderRadius: '20px',
-										overflow: 'hidden',
-										position: 'relative',
-										backgroundColor: '#fefcfb', 
-										border: '1px solid #e7ddd2',
-										boxShadow: '0 8px 24px rgba(0,0,0,0.05)',
-										transition: 'all 0.3s ease-in-out',
-										'&:hover': {
-											boxShadow: '0 12px 32px rgba(0,0,0,0.1)',
-											transform: 'translateY(-4px)',
-										},
-									}}
-								>
-									<div
-										className='absolute top-3 right-3 z-10 cursor-pointer'
-										onClick={() => addToWish(el)}
-									>
-										{el.wish ? (
-											<StarIcon className='text-yellow-400 w-6 h-6 drop-shadow-md' />
-										) : (
-											<StarBorderIcon className='text-gray-300 w-6 h-6 hover:text-yellow-400 transition-colors duration-300' />
-										)}
-									</div>
-
-									<CardContent className='pb-2'>
-										<Box className='flex items-center gap-4'>
-                      <Link href={`/${el.id}`}>
-											<Image
-												src={el.avatar || avatar}
-												alt={el.name}
-												width={60}
-												height={60}
-												className='rounded-full bg-gray-100 border border-gray-300'
-											/>
-                      </Link>
-											<Box>
-												<Typography
-													variant='h6'
-													sx={{
-														fontWeight: 700,
-														color: '#5b3924',
-														fontSize: '1rem',
-													}}
-												>
-													{el.name}
-												</Typography>
-												<Typography
-													variant='body2'
-													sx={{ color: '#8b5e3c', fontWeight: 500 }}
-												>
-													{el.job}
-												</Typography>
-											</Box>
-										</Box>
-									</CardContent>
-
-									<Box className='px-6 py-2 border-t border-b border-[#f1ebe6] bg-[#fcf9f6]'>
-										<Box className='flex items-center justify-between text-sm text-gray-600'>
-											<Box className='flex items-center gap-1'>
-												<Star/>
-												<span className='font-medium'>{el.rating}</span>
-												<span className='text-gray-400'>({el.review.length})</span>
-											</Box>
-											<Box className='flex items-center gap-1'>
-												<LocationOn sx={{ fontSize: 16, color: '#9ca3af' }} />
-												<span>{el.country}</span>
-											</Box>
-										</Box>
-									</Box>
-
-									<CardContent className='pt-2 text-sm text-gray-700'>
-										<Box className='flex justify-between items-center mb-2'>
-											<span className='text-gray-500'>Опыт:</span>
-											<span className='font-medium'>{el.experience} лет</span>
-										</Box>
-
-										<Box className='flex justify-between items-center'>
-											<span className='text-gray-500'>Стоимость:</span>
-											<span className='font-bold text-green-600'>
-												от {el.price} сомони
-											</span>
-										</Box>
-									</CardContent>
-
-									<Box className='px-4 pb-4 pt-1'>
-										<Chip
-											label={el.status ? 'Доступен' : 'Занят'}
-											size='small'
-											sx={{
-												backgroundColor: el.status ? '#16a34a' : '#f59e0b',
-												color: 'white',
-												fontWeight: 500,
-												fontSize: '0.75rem',
-											}}
-										/>
-									</Box>
-								</Card>
-							</div>
-						))}
+					<div className='absolute inset-0 bg-[rgba(0,0,0,0.5)] bg-opacity-50'></div>
 				</div>
 
-				{users?.length === 0 && (
-					<Box sx={{ textAlign: 'center', py: 8 }}>
-						<Typography variant='h5' sx={{ color: '#6b7280', mb: 1 }}>
-							Мастера не найдены
-						</Typography>
-						<Typography variant='body1' sx={{ color: '#1f2937' }}>
-							Попробуйте изменить параметры поиска
-						</Typography>
-					</Box>
-				)}
-			</Container>
-		</Main>
+				<div className='relative z-10 text-center text-white max-w-4xl mx-auto px-4'>
+					<h1 className='text-5xl md:text-6xl font-bold mb-6'>
+						Устодони Моҳирро дар Тоҷикистон Пайдо Кунед
+					</h1>
+					<p className='text-xl md:text-2xl mb-8 text-gray-200'>
+						Бо мутахассисони ботаҷриба барои ҳамаи ниёзҳои хидматрасониятон
+						пайваст шавед
+					</p>
+					<Button
+						size='lg'
+						className='bg-red-500 hover:bg-red-600 text-lg px-8 py-3'
+					>
+						Оғоз кунед
+					</Button>
+				</div>
+			</section>
+
+			{/* Search and Filter Section */}
+			<section className='py-12 bg-gray-50'>
+				<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+					<div className='bg-white rounded-lg shadow-lg p-6'>
+						<div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+							<div className='relative'>
+								<Search className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+								<Input
+									placeholder='Ҷустуҷӯи устодон...'
+									value={searchTerm}
+									onChange={e => setSearchTerm(e.target.value)}
+									className='pl-10'
+								/>
+							</div>
+
+							<Select
+								value={selectedProfession}
+								onValueChange={setSelectedProfession}
+							>
+								<SelectTrigger className='w-full'>
+									<SelectValue placeholder='Касбро интихоб кунед' />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value='all'>Ҳамаи касбҳо</SelectItem>
+									<SelectItem value='electrician'>Барқкаш</SelectItem>
+									<SelectItem value='plumber'>Лӯлакаш</SelectItem>
+									<SelectItem value='carpenter'>Наҷҷор</SelectItem>
+									<SelectItem value='mechanic'>Механик</SelectItem>
+								</SelectContent>
+							</Select>
+
+							<Select value={selectedStatus} onValueChange={setSelectedStatus}>
+								<SelectTrigger className='w-full'>
+									<SelectValue placeholder='Дастрасӣ' />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value='all'>Ҳамаи ҳолатҳо</SelectItem>
+									<SelectItem value='available'>Дастрас</SelectItem>
+									<SelectItem value='busy'>Банд</SelectItem>
+								</SelectContent>
+							</Select>
+
+							<Button className='bg-red-500 hover:bg-red-600'>Ҷустуҷӯ</Button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Masters Grid */}
+			<section className='py-12'>
+				<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+					<h2 className='text-3xl font-bold text-center mb-12'>
+						Устодони Дастрас
+					</h2>
+
+					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+						{users
+            .filter(el => JSON.stringify(el.name).toLowerCase().trim().includes(searchTerm.toLowerCase().trim()))?.map(master => (
+							<Card
+								key={master.id}
+								className='card-shadow hover:shadow-lg transition-shadow duration-300'
+							>
+								<CardContent className='p-6'>
+									<div className='flex flex-col items-center text-center'>
+										{/* <Avatar className='w-20 h-20 mb-4'>
+											<AvatarImage
+												src={master.avatar ? master.avatar : avatar}
+												alt={master.name}
+											/>
+										</Avatar> */}
+                    <Image src={master.avatar ? master.avatar : avatar} alt={master.name} width={90} height={90} className='rounded-[50%] bg-gray-200 mb-4'/>
+
+										<h3 className='text-lg font-semibold mb-2'>
+											{master.name}
+										</h3>
+										<p className='text-red-500 font-medium mb-2'>
+											{master.job}
+										</p>
+
+										<div className='flex items-center space-x-1 mb-2'>
+											<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
+											<span className='text-sm font-medium'>
+												{master.raiting}
+											</span>
+											<span className='text-sm text-gray-500'>
+												({master?.review?.length || 0} баҳогузорӣ)
+											</span>
+										</div>
+
+										<div className='flex items-center space-x-1 mb-2'>
+											<Clock className='w-4 h-4 text-gray-400' />
+											<span className='text-sm text-gray-600'>
+												{master.experience} сол
+											</span>
+										</div>
+
+										<div className='flex items-center space-x-1 mb-4'>
+											<MapPin className='w-4 h-4 text-gray-400' />
+											<span className='text-sm text-gray-600'>
+												 {master.country}
+											</span>
+										</div>
+
+										<Badge
+											variant={
+												master.status  ? 'default' : 'secondary'
+											}
+											className={
+												master.status
+													? 'bg-green-500 hover:bg-green-600'
+													: ''
+											}
+										>
+											{master.status  ? 'Дастрас' : 'Банд'}
+										</Badge>
+
+										<Button
+											asChild
+											className='w-full mt-4 bg-red-500 hover:bg-red-600'
+											disabled={master.status}
+										>
+											<Link href={`/${master.id}`}>Дидани профил</Link>
+										</Button>
+									</div>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</div>
+			</section>
+		</div>
 	)
 }

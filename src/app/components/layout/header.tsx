@@ -1,253 +1,127 @@
-'use client'
+"use client"
 
-import type React from 'react'
-
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import {
-	AppBar,
-	Toolbar,
-	Typography,
-	Button,
-	IconButton,
-	Menu,
-	MenuItem,
-	Badge,
-	Box,
-	useMediaQuery,
-	useTheme,
-} from '@mui/material'
-import { Heart, MenuIcon, User, LogOut, X } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { User, LogOut, Menu, X } from "lucide-react"
+import Image from 'next/image'
+import decode from '@/app/utils/axios-reguest'
+import avatar from '@/app/assets/avatar.png'
 
 export default function Header() {
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-	const router = useRouter()
-	const theme = useTheme()
-	const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true) 
 
-	const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorEl(event.currentTarget)
-	}
+  return (
+    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">F</span>
+            </div>
+            <span className="text-2xl font-bold text-red-500">FIX.TJ</span>
+          </Link>
 
-	const handleMenuClose = () => {
-		setAnchorEl(null)
-	}
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
+              АСОСӢ
+            </Link>
+            <Link href="/products" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
+              МАҲСУЛОТ
+            </Link>
+            <Link href="/about" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
+              ДАР БОРАИ МО
+            </Link>
+          </nav>
 
-	const handleLogout = () => {
-		alert('Вы вышли из системы')
-		router.push('/login')
-		handleMenuClose()
-		localStorage.removeItem('access_token')
-	}
+          {/* Profile Menu / Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Image src={decode?.decode?.avatar || avatar} alt='salom' fill className='rounded-[50%] bg-gray-200'/>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Профил
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Фармоишҳо
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Баромад
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Button variant="outline" asChild>
+                  <Link href="/login">Ворид шудан</Link>
+                </Button>
+                <Button asChild className="bg-red-500 hover:bg-red-600">
+                  <Link href="/register">Сабти ном</Link>
+                </Button>
+              </div>
+            )}
+          </div>
 
-	return (
-		<AppBar
-			position='sticky'
-			sx={{
-				backgroundColor: '#FFFFFF99',
-				color: '#1f2937',
-				boxShadow:
-					'0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-				borderBottom: '1px solid #e5e7eb',
-			}}
-		>
-				<div className='w-[100%]'>
-					<Toolbar>
-						<div className='flex justify-between w-[1200px] m-auto'>
-							<div>
-								<Link
-									href='/'
-									style={{ textDecoration: 'none', color: 'inherit' }}
-								>
-									<Typography
-										variant='h5'
-										component='h1'
-										sx={{ fontWeight: 'bold', color: '#2563eb' }}
-									>
-										МастерСервис
-									</Typography>
-								</Link>
-							</div>
-							<div>
-								<Box
-									sx={{
-										flex: 1,
-										display: 'flex',
-										alignItems: 'center',
-										gap: 2,
-									}}
-								>
-									{!isMobile && (
-										<Box sx={{ display: 'flex', gap: 1 }}>
-											<Link href='/' style={{ textDecoration: 'none' }}>
-												<Button
-													sx={{
-														color: '#1f2937',
-														fontWeight: 500,
-														'&:hover': { backgroundColor: '#f3f4f6' },
-													}}
-												>
-													Главная
-												</Button>
-											</Link>
-											<Link href='/products' style={{ textDecoration: 'none' }}>
-												<Button
-													sx={{
-														color: '#1f2937',
-														fontWeight: 500,
-														'&:hover': { backgroundColor: '#f3f4f6' },
-													}}
-												>
-													Запчасти
-												</Button>
-											</Link>
-											<Link href='/about' style={{ textDecoration: 'none' }}>
-												<Button
-													sx={{
-														color: '#1f2937',
-														fontWeight: 500,
-														'&:hover': { backgroundColor: '#f3f4f6' },
-													}}
-												>
-													О нас
-												</Button>
-											</Link>
-										</Box>
-									)}
-								</Box>
-							</div>
-							<div>
-								<Link href='/wishlist'>
-									<IconButton
-										sx={{
-											color: '#1f2937',
-											'&:hover': { backgroundColor: '#f3f4f6' },
-										}}
-									>
-										<Badge badgeContent={3} color='error'>
-											<Heart size={20} />
-										</Badge>
-									</IconButton>
-								</Link>
+          {/* Mobile Menu Button */}
+          <Button variant="ghost" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        </div>
 
-								{/* Burger Menu */}
-								<IconButton
-									onClick={handleMenuOpen}
-									sx={{
-										color: '#1f2937',
-										'&:hover': { backgroundColor: '#f3f4f6' },
-										backgroundColor: Boolean(anchorEl)
-											? '#f3f4f6'
-											: 'transparent',
-									}}
-								>
-									{Boolean(anchorEl) ? <X size={20} /> : <MenuIcon size={20} />}
-								</IconButton>
-							</div>
-						</div>
-					</Toolbar>
-					{/* Mobile Navigation */}
-					{isMobile && (
-						<Toolbar
-							sx={{
-								justifyContent: 'center',
-								gap: 3,
-								pb: 2,
-								borderTop: '1px solid #e5e7eb',
-							}}
-						>
-							<Link href='/' style={{ textDecoration: 'none' }}>
-								<Button
-									sx={{
-										color: '#1f2937',
-										fontWeight: 500,
-										'&:hover': { backgroundColor: '#f3f4f6' },
-									}}
-								>
-									Главная
-								</Button>
-							</Link>
-							<Link href='/products' style={{ textDecoration: 'none' }}>
-								<Button
-									sx={{
-										color: '#1f2937',
-										fontWeight: 500,
-										'&:hover': { backgroundColor: '#f3f4f6' },
-									}}
-								>
-									Запчасти
-								</Button>
-							</Link>
-							<Link href='/about' style={{ textDecoration: 'none' }}>
-								<Button
-									sx={{
-										color: '#1f2937',
-										fontWeight: 500,
-										'&:hover': { backgroundColor: '#f3f4f6' },
-									}}
-								>
-									О нас
-								</Button>
-							</Link>
-						</Toolbar>
-					)}
-					{/* Dropdown Menu */}
-					<Menu
-						anchorEl={anchorEl}
-						open={Boolean(anchorEl)}
-						onClose={handleMenuClose}
-						anchorOrigin={{
-							vertical: 'bottom',
-							horizontal: 'right',
-						}}
-						transformOrigin={{
-							vertical: 'top',
-							horizontal: 'right',
-						}}
-						PaperProps={{
-							sx: {
-								mt: 1,
-								minWidth: 200,
-								boxShadow:
-									'0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-								border: '1px solid #e5e7eb',
-								borderRadius: 2,
-							},
-						}}
-					>
-						<Link
-							href='/profile'
-							style={{ textDecoration: 'none', color: 'inherit' }}
-						>
-							<MenuItem
-								onClick={handleMenuClose}
-								sx={{
-									gap: 2,
-									color: '#1f2937',
-									'&:hover': { backgroundColor: '#f3f4f6' },
-								}}
-							>
-								<User size={16} />
-								Мой профиль
-							</MenuItem>
-						</Link>
-						<MenuItem
-							onClick={handleLogout}
-							sx={{
-								gap: 2,
-								color: '#ef4444',
-								borderTop: '1px solid #e5e7eb',
-								mt: 1,
-								pt: 2,
-								'&:hover': { backgroundColor: '#fef2f2' },
-							}}
-						>
-							<LogOut size={16} />
-							Выход
-						</MenuItem>
-					</Menu>
-				</div>
-		</AppBar>
-	)
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t">
+            <nav className="flex flex-col space-y-4">
+              <Link href="/" className="text-gray-700 hover:text-red-500 font-medium">
+                АСОСӢ
+              </Link>
+              <Link href="/products" className="text-gray-700 hover:text-red-500 font-medium">
+                МАҲСУЛОТ
+              </Link>
+              <Link href="/about" className="text-gray-700 hover:text-red-500 font-medium">
+                ДАР БОРАИ МО
+              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link href="/profile" className="text-gray-700 hover:text-red-500 font-medium">
+                    Профил
+                  </Link>
+                  <Link href="/orders" className="text-gray-700 hover:text-red-500 font-medium">
+                    Фармоишҳо
+                  </Link>
+                  <button className="text-gray-700 hover:text-red-500 font-medium text-left">Баромад</button>
+                </>
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <Button variant="outline" asChild>
+                    <Link href="/login">Ворид шудан</Link>
+                  </Button>
+                  <Button asChild className="bg-red-500 hover:bg-red-600">
+                    <Link href="/register">Сабти ном</Link>
+                  </Button>
+                </div>
+              )}
+            </nav>
+          </div>
+        )}
+      </div>
+    </header>
+  )
 }

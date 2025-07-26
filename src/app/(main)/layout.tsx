@@ -10,9 +10,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <>
       <Header />
-      <div className="mt-[40px] mb-[40px]">
+      
         {children}
-      </div>
+     
       <Footer/>
     </>
   )
