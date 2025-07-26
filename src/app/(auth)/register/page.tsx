@@ -1,202 +1,483 @@
 'use client'
 
-import { ChangeEvent, FormEvent, useState } from 'react'
+import type React from 'react'
+
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import {
+	Container,
+	Typography,
+	Box,
+	TextField,
+	Button,
+	Card,
+	CardContent,
+	IconButton,
+	InputAdornment,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+	Checkbox,
+	FormControlLabel,
+	Grid,
+	Divider,
+	Alert,
+} from '@mui/material'
+import { Eye, EyeOff, Mail, Lock, User, Phone, UserCheck } from 'lucide-react'
 import Link from 'next/link'
 import useZapros from '@/app/store/zapros'
-import RegisterLayout from '../layout'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
-import EmailOutlineIcon from '@mui/icons-material/EmailOutlined'
-import PhoneOutlineIcon from '@mui/icons-material/PhoneOutlined'
-import LockOutlineIcon from '@mui/icons-material/LockOutlined'
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
 
-export default function Page() {
-  const router = useRouter()
-  const { register } = useZapros()
+export default function RegisterPage() {
+	const { register } = useZapros()
+	const [formData, setFormData] = useState({
+		firstName: '',
+		lastName: '',
+		email: '',
+		phone: '',
+		password: '',
+		confirmPassword: '',
+		userType: '',
+		profession: '',
+		country: '',
+		years: '',
+	})
+	const [showPassword, setShowPassword] = useState(false)
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+	const [agreeToTerms, setAgreeToTerms] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
+	const [error, setError] = useState('')
+	const [success, setSuccess] = useState('')
+	const router = useRouter()
 
-  const [name, setName] = useState('')
-  const [surName, setSurName] = useState('')
-  const [number, setNumber] = useState('')
-  const [email, setEmail] = useState('')
-  const [avatar, setAvatar] = useState<string | null>(null)
-  const [pas, setPas] = useState('')
-  const [role] = useState('user')
+	const professions = [
+		'Электрик',
+		'Сантехник',
+		'Строитель',
+		'Маляр',
+		'Мебельщик',
+		'Уборщик',
+	]
+	const country = ['Dushanbe', 'Khujand', 'Bokhtar', 'Farkhor']
+	const years = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setAvatar(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+	const handleInputChange = (field: string, value: string) => {
+		setFormData(prev => ({ ...prev, [field]: value }))
+		setError('')
+	}
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = {
-      name,
-      surname: surName,
-      number,
-      email,
-      password: pas,
-      avatar,
-      role,
-    }
-    register(formData)
-    router.push('/login')
-  }
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+		setError('')
+		setSuccess('')
 
-  return (
-    <RegisterLayout>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#fdf2f8] to-[#fae8ff] p-4"
-      >
-        <motion.form
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          onSubmit={handleSubmit}
-          className="bg-white border border-[#e9d5ff] rounded-2xl shadow-lg p-8 w-full max-w-md space-y-5"
-        >
-          <h2 className="text-3xl font-bold text-[#6b21a8] text-center mb-6">
-            Регистрация
-          </h2>
+		if (formData.password !== formData.confirmPassword) {
+			setError('Пароли не совпадают')
+			return
+		}
 
-          {/* Превью аватара */}
-          <div className="flex flex-col items-center">
-            <div className="relative w-24 h-24 rounded-full bg-[#f3e8ff] border-2 border-[#e9d5ff] flex items-center justify-center overflow-hidden">
-              {avatar ? (
-                <Image
-                  src={avatar}
-                  alt="Avatar Preview"
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <PersonOutlineIcon className="text-[#9D174D] text-4xl" />
-              )}
-            </div>
-            <motion.label
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-3 px-4 py-2 bg-[#f3e8ff] text-[#6b21a8] rounded-lg cursor-pointer flex items-center gap-2 text-sm font-medium"
-            >
-              <AddAPhotoIcon fontSize="small" />
-              <span>Загрузить фото</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </motion.label>
-          </div>
+		if (!agreeToTerms) {
+			setError('Необходимо согласиться с условиями использования')
+			return
+		}
 
-          {/* Поля формы */}
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <PersonOutlineIcon fontSize="small" />
-                Имя
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
+		setIsLoading(true)
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <PersonOutlineIcon fontSize="small" />
-                Фамилия
-              </label>
-              <input
-                type="text"
-                value={surName}
-                onChange={e => setSurName(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
+		let newUser = null
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <PhoneOutlineIcon fontSize="small" />
-                Телефон
-              </label>
-              <input
-                type="tel"
-                value={number}
-                onChange={e => setNumber(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
+		if (formData.userType === 'master') {
+			newUser = {
+				name: formData.firstName,
+				surname: formData.lastName,
+				email: formData.email,
+				number: formData.phone,
+				role: formData.userType,
+				password: formData.password,
+				job: formData.profession,
+				status: true,
+				avatar: null,
+				wish: false,
+				raiting: 0,
+				country: formData.country,
+            experience: formData.years,
+			}
+		} else {
+			newUser = {
+				name: formData.firstName,
+				surname: formData.lastName,
+				email: formData.email,
+				number: formData.phone,
+				role: formData.userType,
+				password: formData.password,
+				avatar: null,
+			}
+		}
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <EmailOutlineIcon fontSize="small" />
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
+		const res = await register(newUser)
+		console.log(res)
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <LockOutlineIcon fontSize="small" />
-                Пароль
-              </label>
-              <input
-                type="password"
-                value={pas}
-                onChange={e => setPas(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
-          </div>
+		if (res === undefined) {
+			router.push('/login')
+		}
+	}
 
-          {/* Кнопки */}
-          <div className="space-y-3">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="w-full bg-[#9D174D] text-white py-3 rounded-lg hover:bg-[#7e22ce] transition-colors shadow-md font-medium"
-            >
-              Зарегистрироваться
-            </motion.button>
+	return (
+		<Box sx={{ minHeight: '100vh', backgroundColor: '#f8f9fa', py: 4 }}>
+			<Container maxWidth='md'>
+				<Box sx={{ textAlign: 'center', mb: 4 }}>
+					<Link href='/' style={{ textDecoration: 'none' }}>
+						<Typography
+							variant='h3'
+							sx={{ fontWeight: 'bold', color: '#2563eb', mb: 2 }}
+						>
+							МастерСервис
+						</Typography>
+					</Link>
+					<Typography
+						variant='h4'
+						sx={{ fontWeight: 600, color: '#1f2937', mb: 1 }}
+					>
+						Регистрация
+					</Typography>
+					<Typography variant='body1' sx={{ color: '#6b7280' }}>
+						Создайте аккаунт для доступа к сервису
+					</Typography>
+				</Box>
 
-            <div className="flex justify-center">
-              <Link href="/login">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="text-[#9333ea] text-sm font-medium hover:underline flex items-center gap-1"
-                >
-                  Уже есть аккаунт? <span className="font-semibold">Войти</span>
-                </motion.div>
-              </Link>
-            </div>
-          </div>
-        </motion.form>
-      </motion.div>
-    </RegisterLayout>
-  )
+				<Card
+					sx={{ boxShadow: 3, borderRadius: 3, border: '1px solid #e5e7eb' }}
+				>
+					<CardContent sx={{ p: 4 }}>
+						{error && (
+							<Alert severity='error' sx={{ mb: 3, borderRadius: 2 }}>
+								{error}
+							</Alert>
+						)}
+
+						{success && (
+							<Alert severity='success' sx={{ mb: 3, borderRadius: 2 }}>
+								{success}
+							</Alert>
+						)}
+
+						<form onSubmit={handleSubmit}>
+							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+								{/* Name Fields */}
+								<div className='flex gap-[25px]'>
+									<TextField
+										fullWidth
+										label='Имя'
+										value={formData.firstName}
+										onChange={e =>
+											handleInputChange('firstName', e.target.value)
+										}
+										placeholder='Иван'
+										required
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position='start'>
+													<User size={20} color='#6b7280' />
+												</InputAdornment>
+											),
+										}}
+									/>
+
+									<TextField
+										fullWidth
+										label='Фамилия'
+										value={formData.lastName}
+										onChange={e =>
+											handleInputChange('lastName', e.target.value)
+										}
+										placeholder='Иванов'
+										required
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position='start'>
+													<User size={20} color='#6b7280' />
+												</InputAdornment>
+											),
+										}}
+									/>
+								</div>
+
+								{/* Email Field */}
+								<TextField
+									fullWidth
+									label='Email'
+									type='email'
+									value={formData.email}
+									onChange={e => handleInputChange('email', e.target.value)}
+									placeholder='your@email.com'
+									required
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<Mail size={20} color='#6b7280' />
+											</InputAdornment>
+										),
+									}}
+								/>
+
+								{/* Phone Field */}
+								<TextField
+									fullWidth
+									label='Телефон'
+									type='tel'
+									value={formData.phone}
+									onChange={e => handleInputChange('phone', e.target.value)}
+									placeholder='+7 (999) 123-45-67'
+									required
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<Phone size={20} color='#6b7280' />
+											</InputAdornment>
+										),
+									}}
+								/>
+
+								{/* User Type Select */}
+								<FormControl fullWidth required>
+									<InputLabel>Тип пользователя</InputLabel>
+									<Select
+										value={formData.userType}
+										onChange={e =>
+											handleInputChange('userType', e.target.value)
+										}
+										label='Тип пользователя'
+										startAdornment={
+											<InputAdornment position='start'>
+												<UserCheck size={20} color='#6b7280' />
+											</InputAdornment>
+										}
+									>
+										<MenuItem value='user'>User</MenuItem>
+										<MenuItem value='master'>Master</MenuItem>
+									</Select>
+								</FormControl>
+								{formData.userType === 'master' && (
+									<div className='flex flex-col gap-[25px]'>
+										<div className='flex gap-[25px]'>
+											<FormControl fullWidth required>
+												<InputLabel>Профессия</InputLabel>
+												<Select
+													value={formData.profession}
+													onChange={e =>
+														handleInputChange('profession', e.target.value)
+													}
+													label='Профессия'
+												>
+													{professions.map(prof => (
+														<MenuItem key={prof} value={prof}>
+															{prof}
+														</MenuItem>
+													))}
+												</Select>
+											</FormControl>
+											<FormControl fullWidth required>
+												<InputLabel>Опыт работы</InputLabel>
+												<Select
+													value={formData.years}
+													onChange={e =>
+														handleInputChange('years', e.target.value)
+													}
+													label='Опыт работы'
+												>
+													{years.map(prof => (
+														<MenuItem key={prof} value={prof}>
+															{prof}
+														</MenuItem>
+													))}
+												</Select>
+											</FormControl>
+										</div>
+										<FormControl fullWidth required>
+											<InputLabel>Country</InputLabel>
+											<Select
+												value={formData.country}
+												onChange={e =>
+													handleInputChange('country', e.target.value)
+												}
+												label='Country'
+											>
+												{country.map(prof => (
+													<MenuItem key={prof} value={prof}>
+														{prof}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+									</div>
+								)}
+
+								{/* Password Fields */}
+								<div className='flex gap-[25px]'>
+									<TextField
+										fullWidth
+										label='Пароль'
+										type={showPassword ? 'text' : 'password'}
+										value={formData.password}
+										onChange={e =>
+											handleInputChange('password', e.target.value)
+										}
+										placeholder='Введите пароль'
+										required
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position='start'>
+													<Lock size={20} color='#6b7280' />
+												</InputAdornment>
+											),
+											endAdornment: (
+												<InputAdornment position='end'>
+													<IconButton
+														onClick={() => setShowPassword(!showPassword)}
+														edge='end'
+													>
+														{showPassword ? (
+															<EyeOff size={20} />
+														) : (
+															<Eye size={20} />
+														)}
+													</IconButton>
+												</InputAdornment>
+											),
+										}}
+									/>
+									<TextField
+										fullWidth
+										label='Подтвердите пароль'
+										type={showConfirmPassword ? 'text' : 'password'}
+										value={formData.confirmPassword}
+										onChange={e =>
+											handleInputChange('confirmPassword', e.target.value)
+										}
+										placeholder='Повторите пароль'
+										required
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position='start'>
+													<Lock size={20} color='#6b7280' />
+												</InputAdornment>
+											),
+											endAdornment: (
+												<InputAdornment position='end'>
+													<IconButton
+														onClick={() =>
+															setShowConfirmPassword(!showConfirmPassword)
+														}
+														edge='end'
+													>
+														{showConfirmPassword ? (
+															<EyeOff size={20} />
+														) : (
+															<Eye size={20} />
+														)}
+													</IconButton>
+												</InputAdornment>
+											),
+										}}
+									/>
+								</div>
+								{/* Terms Agreement */}
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={agreeToTerms}
+											onChange={e => setAgreeToTerms(e.target.checked)}
+											color='primary'
+										/>
+									}
+									label={
+										<Typography variant='body2' sx={{ color: '#1f2937' }}>
+											Я согласен с{' '}
+											<Link
+												href='#'
+												style={{
+													color: '#2563eb',
+													fontWeight: 600,
+													textDecoration: 'none',
+												}}
+											>
+												условиями использования
+											</Link>{' '}
+											и{' '}
+											<Link
+												href='#'
+												style={{
+													color: '#2563eb',
+													fontWeight: 600,
+													textDecoration: 'none',
+												}}
+											>
+												политикой конфиденциальности
+											</Link>
+										</Typography>
+									}
+								/>
+
+								{/* Register Button */}
+								<Button
+									type='submit'
+									fullWidth
+									variant='contained'
+									size='large'
+									disabled={isLoading}
+									sx={{
+										py: 1.5,
+										fontSize: '1.1rem',
+										fontWeight: 600,
+									}}
+								>
+									{isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
+								</Button>
+
+								{/* Divider */}
+								<Divider sx={{ my: 2 }}>
+									<Typography variant='body2' sx={{ color: '#6b7280', px: 2 }}>
+										Или
+									</Typography>
+								</Divider>
+
+								{/* Login Link */}
+								<Box sx={{ textAlign: 'center' }}>
+									<Typography variant='body1' sx={{ color: '#1f2937' }}>
+										Уже есть аккаунт?{' '}
+										<Link href='/auth/login' style={{ textDecoration: 'none' }}>
+											<Typography
+												component='span'
+												sx={{
+													color: '#2563eb',
+													fontWeight: 600,
+													'&:hover': { textDecoration: 'underline' },
+												}}
+											>
+												Войти
+											</Typography>
+										</Link>
+									</Typography>
+								</Box>
+							</Box>
+						</form>
+					</CardContent>
+				</Card>
+
+				{/* Back to Home */}
+				<Box sx={{ textAlign: 'center', mt: 3 }}>
+					<Link href='/' style={{ textDecoration: 'none' }}>
+						<Typography
+							variant='body2'
+							sx={{
+								color: '#6b7280',
+								'&:hover': { color: '#2563eb', textDecoration: 'underline' },
+							}}
+						>
+							← Вернуться на главную
+						</Typography>
+					</Link>
+				</Box>
+			</Container>
+		</Box>
+	)
 }

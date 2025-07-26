@@ -1,116 +1,220 @@
-'use client'
+"use client"
 
-import { useState, ChangeEvent, FormEvent } from 'react'
-import RegisterLayout from '../layout'
-import Link from 'next/link'
+import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import {
+  Container,
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  IconButton,
+  InputAdornment,
+  Checkbox,
+  FormControlLabel,
+  Divider,
+  Alert,
+} from "@mui/material"
+import { Eye, EyeOff, Mail, Lock } from "lucide-react"
+import Link from "next/link"
 import useZapros from '@/app/store/zapros'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import EmailOutlineIcon from '@mui/icons-material/EmailOutlined'
-import LockOutlineIcon from '@mui/icons-material/LockOutlined'
 
-export default function Page() {
-  const router = useRouter()
+export default function LoginPage() {
   const { login } = useZapros()
-  const [email, setEmail] = useState('')
-  const [pas, setPas] = useState('')
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const router = useRouter()
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = {
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setError("")
+  setIsLoading(true)
+
+  try {
+    const user = {
       email,
-      password: pas,
+      password
     }
-    login(formData)
-    router.push('/')
+
+    const res = await login(user)
+    
+    if (res === undefined) {
+      router.push("/")
+    } else {
+      setError("Неверный логин или пароль")
+    }
+
+  } catch (err) {
+    setError("Ошибка при входе")
+  } finally {
+    setIsLoading(false)
   }
+}
+
 
   return (
-    <RegisterLayout>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#fdf2f8] to-[#fae8ff] p-4"
-      >
-        <motion.form
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          onSubmit={handleSubmit}
-          className="bg-white border border-[#e9d5ff] rounded-2xl shadow-lg p-8 w-full max-w-md space-y-6"
-        >
-          <h2 className="text-3xl font-bold text-[#6b21a8] text-center mb-6">
-            Вход в аккаунт
-          </h2>
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#f8f9fa", display: "flex", alignItems: "center", py: 4 }}>
+      <Container maxWidth="sm">
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <Typography variant="h3" sx={{ fontWeight: "bold", color: "#2563eb", mb: 2 }}>
+              МастерСервис
+            </Typography>
+          </Link>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: "#1f2937", mb: 1 }}>
+            Вход в систему
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#6b7280" }}>
+            Войдите в свой аккаунт для доступа к сервису
+          </Typography>
+        </Box>
 
-          {/* Поля формы */}
-          <div className="space-y-5">
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <EmailOutlineIcon fontSize="small" />
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
+        <Card sx={{ boxShadow: 3, borderRadius: 3, border: "1px solid #e5e7eb" }}>
+          <CardContent sx={{ p: 4 }}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                {error}
+              </Alert>
+            )}
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[#6b21a8] font-medium flex items-center gap-2">
-                <LockOutlineIcon fontSize="small" />
-                Пароль
-              </label>
-              <input
-                type="password"
-                value={pas}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setPas(e.target.value)}
-                className="border border-[#e9d5ff] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#e9d5ff] transition-all"
-                required
-              />
-            </div>
-          </div>
+            <form onSubmit={handleSubmit}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                {/* Email Field */}
+                <TextField
+                  fullWidth
+                  name='email'
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Mail size={20} color="#6b7280" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
 
-          {/* Кнопки */}
-          <div className="space-y-4">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="w-full bg-[#9D174D] text-white py-3 rounded-lg hover:bg-[#7e22ce] transition-colors shadow-md font-medium"
-            >
-              Войти
-            </motion.button>
+                {/* Password Field */}
+                <TextField
+                  fullWidth
+                  label="Пароль"
+                  name='password'
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Введите пароль"
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock size={20} color="#6b7280" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
 
-            <div className="flex justify-between items-center">
-              <Link href="/forgot-password">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="text-[#9333ea] text-sm hover:underline"
+                {/* Remember Me & Forgot Password */}
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label="Запомнить меня"
+                  />
+                  <Link href="#" style={{ textDecoration: "none" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#2563eb",
+                        "&:hover": { textDecoration: "underline" },
+                      }}
+                    >
+                      Забыли пароль?
+                    </Typography>
+                  </Link>
+                </Box>
+
+                {/* Login Button */}
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={isLoading}
+                  sx={{
+                    py: 1.5,
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                  }}
                 >
-                  Забыли пароль?
-                </motion.div>
-              </Link>
+                  {isLoading ? "Вход..." : "Войти"}
+                </Button>
 
-              <div className="flex items-center gap-1 text-sm">
-                <span className="text-[#6b21a8]">Нет аккаунта?</span>
-                <Link href="/register">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="text-[#7e22ce] font-semibold hover:underline"
-                  >
-                    Регистрация
-                  </motion.div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </motion.form>
-      </motion.div>
-    </RegisterLayout>
+                <Divider sx={{ my: 2 }}>
+                  <Typography variant="body2" sx={{ color: "#6b7280", px: 2 }}>
+                    Или
+                  </Typography>
+                </Divider>
+
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography variant="body1" sx={{ color: "#1f2937" }}>
+                    Нет аккаунта?{" "}
+                    <Link href="/auth/register" style={{ textDecoration: "none" }}>
+                      <Typography
+                        component="span"
+                        sx={{
+                          color: "#2563eb",
+                          fontWeight: 600,
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
+                        Зарегистрироваться
+                      </Typography>
+                    </Link>
+                  </Typography>
+                </Box>
+              </Box>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Box sx={{ textAlign: "center", mt: 3 }}>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#6b7280",
+                "&:hover": { color: "#2563eb", textDecoration: "underline" },
+              }}
+            >
+              ← Вернуться на главную
+            </Typography>
+          </Link>
+        </Box>
+      </Container>
+    </Box>
   )
 }

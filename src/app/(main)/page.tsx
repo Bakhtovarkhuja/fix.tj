@@ -1,246 +1,335 @@
 'use client'
 
+import type React from 'react'
+
+import { useEffect, useState } from 'react'
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Typography,
+	Container,
+	Typography,
+	Box,
+	TextField,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+	Button,
+	Card,
+	CardContent,
+	Grid,
+	Chip,
+	IconButton,
+	Slider,
+	InputAdornment,
+	Avatar,
 } from '@mui/material'
+import { Search, Filter, Star, MapPin, Heart } from 'lucide-react'
+import Link from 'next/link'
 import Main from '../components/container/main'
-import useZapros from '@/app/store/zapros'
-import { useEffect } from 'react'
-import avatar from '@/app/assets/avatar.png'
+import useZapros from '../store/zapros'
 import Image from 'next/image'
-import StarRatings from 'react-star-ratings'
+import avatar from '@/app/assets/avatar.png'
 import StarBorderIcon from '@mui/icons-material/StarBorder'
 import StarIcon from '@mui/icons-material/Star'
-import { useRouter } from 'next/navigation'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { motion } from 'framer-motion'
+import { LocationOn } from '@mui/icons-material'
 
-interface Review {
-  id: number
-  name: string
-  avatar: string | null
-  raiting: number
-  description: string
-}
+const categories = [
+	'Ремонт холодильников',
+	'Автоэлектрик',
+	'Сантехник',
+	'Электрик',
+	'Ремонт стиральных машин',
+	'Ремонт телевизоров',
+]
 
-interface User {
-  id: number
-  name: string
-  surname: string
-  number: number
-  email: string
-  raiting: number
-  job: string
-  status: boolean
-  avatar: string
-  review: Review[]
-  role: string
-  experience: number
-  wish: boolean
-}
+const locations = [
+	,
+	'Москва',
+	'Санкт-Петербург',
+	'Екатеринбург',
+	'Новосибирск',
+	'Казань',
+]
 
 export default function Home() {
-  const router = useRouter()
-  const { users, getUsers, changeWishStatus } = useZapros()
+	const {
+		users,
+		getUsers,
+		changeWishStatus,
+		filterByExperiense,
+		filterByCountry,
+		filterByJob,
+		filterByName,
+	} = useZapros()
+	const [searchTerm, setSearchTerm] = useState('')
+	const [selectedCategory, setSelectedCategory] = useState('')
+	const [selectedLocation, setSelectedLocation] = useState('')
+	const [experienceRange, setExperienceRange] = useState([0])
 
-  const handleProfileById = (id: number) => {
-    router.push(`/${id}`)
-  }
+	const addToWish = (el) => {
+		const user = {
+			...el,
+			wish: !el.wish,
+		}
 
-  const handleAddToWishlist = (el: User) => {
-    const user: User = {
-      ...el,
-      wish: !el.wish,
-    }
-    changeWishStatus(el.id, user)
-  }
+		changeWishStatus(el.id, user)
+	}
 
-  const rating = (reviews: Review[] = []): number => {
-    if (!reviews.length) return 0
-    const total = reviews.reduce((acc, curr) => acc + (curr.raiting || 0), 0)
-    return total / reviews.length
-  }
+	const handleSeeAll = () => {
+		setSearchTerm('')
+		setSelectedCategory('')
+		setSelectedLocation('')
+		setExperienceRange([0])
+		getUsers()
+	}
 
-  useEffect(() => {
-    getUsers()
-  }, [getUsers])
+	const handleFilter = () => {
+		filterByExperiense(experienceRange)
+		filterByCountry(selectedLocation)
+		filterByJob(selectedCategory)
+		filterByName(searchTerm)
+	}
 
-  return (
-    <Main>
-      <section className="flex flex-col md:flex-row gap-6 md:gap-8 items-start p-4 bg-gradient-to-b">
-        <aside className="w-full md:w-[25%] sticky top-4">
-          <Accordion
-            sx={{
-              boxShadow: '0 4px 20px rgba(157, 23, 77, 0.1)',
-              borderRadius: '14px',
-              overflow: 'hidden',
-              background: 'rgba(253, 242, 248, 0.7)',
-              backdropFilter: 'blur(10px)',
-              '&:before': { display: 'none' },
-              border: '1px solid rgba(236, 72, 153, 0.2)',
-            }}
-          >
-            <AccordionSummary
-              expandIcon={
-                <ExpandMoreIcon sx={{ color: '#9D174D', fontSize: '1.5rem' }} />
-              }
-              aria-controls="panel1-content"
-              id="panel1-header"
-              sx={{
-                py: 1.5,
-                px: 3,
-                minHeight: 'unset',
-                '& .MuiAccordionSummary-content': {
-                  margin: '8px 0',
-                },
-              }}
-            >
-              <Typography
-                component="span"
-                sx={{
-                  fontWeight: 700,
-                  color: '#9D174D',
-                  fontSize: '1.1rem',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                Фильтры
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                padding: '16px 24px',
-              }}
-            >
-              <div className="flex flex-col gap-3">
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    color: '#9D174D', 
-                    mb: 2,
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                  }}
-                >
-                  Опыт работы
-                </Typography>
-                {[1, 2, 3, 4, 5, 6].map((years) => (
-                  <motion.div
-                    key={years}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-3 cursor-pointer py-1"
-                  >
-                    <div className="w-5 h-5 rounded-md border-2 border-[#9D174D] flex items-center justify-center transition-all">
-                      <div className="w-3 h-3 rounded-sm bg-[#9D174D] transition-all"></div>
-                    </div>
-                    <span className="text-[#6b21a8] font-medium">
-                      {years} {years === 1 ? 'год' : 'года'}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </aside>
+	useEffect(() => {
+		getUsers()
+	}, [])
 
-        {/* Карточки мастеров */}
-        <aside className="w-full md:w-[75%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users
-            .filter((el: User) => el.role === 'master')
-            .map((el: User) => (
-              <motion.div
-                key={el.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                whileHover={{ 
-                  y: -8,
-                  boxShadow: '0 10px 25px rgba(157, 23, 77, 0.15)'
-                }}
-                className="bg-white rounded-xl p-5 shadow-sm border border-[#f3e8ff] hover:border-[#e9d5ff] transition-all duration-300 relative overflow-hidden group"
-              >
-                {/* Статус */}
-                <div
-                  className={`absolute top-3 left-3 text-xs font-semibold ${
-                    el.status ? 'bg-[#10b981]' : 'bg-[#ef4444]'
-                  } text-white rounded-full px-3 py-1 z-10 shadow-sm`}
-                >
-                  {el.status ? 'Свободен' : 'Занят'}
-                </div>
+	return (
+		<Main>
+			<Container maxWidth='xl'>
+				<Box sx={{ textAlign: 'center', mb: 6 }}>
+					<Typography
+						variant='h3'
+						component='h1'
+						sx={{ fontWeight: 'bold', color: '#1f2937', mb: 2 }}
+					>
+						Найдите лучших мастеров
+					</Typography>
+					<Typography
+						variant='h6'
+						sx={{ color: '#6b7280', maxWidth: '800px', mx: 'auto' }}
+					>
+						Профессиональные мастера для ремонта техники и решения бытовых
+						проблем
+					</Typography>
+				</Box>
 
-                {/* Избранное */}
-                <motion.div
-                  whileTap={{ scale: 0.8 }}
-                  className="absolute top-3 right-3 z-10 cursor-pointer"
-                  onClick={() => handleAddToWishlist(el)}
-                >
-                  {el.wish ? (
-                    <StarIcon className="text-[#eab308] text-2xl drop-shadow-md" />
-                  ) : (
-                    <StarBorderIcon className="text-[#d8b4fe] text-2xl group-hover:text-[#eab308] transition-colors duration-300" />
-                  )}
-                </motion.div>
+				<Card sx={{ mb: 4, borderRadius: 3, border: '1px solid #e5e7eb' }}>
+					<CardContent sx={{ p: 3 }}>
+						<div className='flex gap-[25px] items-start'>
+							<div className='w-[20%]'>
+								<TextField
+									fullWidth
+									placeholder='Поиск мастеров...'
+									value={searchTerm}
+									onChange={e => setSearchTerm(e.target.value)}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<Search size={20} color='#6b7280' />
+											</InputAdornment>
+										),
+									}}
+								/>
+							</div>
+							<div className='w-[20%]'>
+								<FormControl fullWidth>
+									<InputLabel>Категория</InputLabel>
+									<Select
+										value={selectedCategory}
+										onChange={e => setSelectedCategory(e.target.value)}
+										label='Категория'
+									>
+										{categories.map(category => (
+											<MenuItem key={category} value={category}>
+												{category}
+											</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+							</div>
+							<div className='w-[20%]'>
+								<FormControl fullWidth>
+									<InputLabel>Город</InputLabel>
+									<Select
+										value={selectedLocation}
+										onChange={e => setSelectedLocation(e.target.value)}
+										label='Город'
+									>
+										{locations.map(location => (
+											<MenuItem key={location} value={location}>
+												{location}
+											</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+							</div>
+							<div className='w-[20%]'>
+								<Box>
+									<Typography
+										variant='body2'
+										sx={{ color: '#1f2937', mb: 1, fontWeight: 500 }}
+									>
+										Опыт: от {experienceRange[0]} лет
+									</Typography>
+									<Slider
+										value={experienceRange}
+										onChange={(_, newValue) =>
+											setExperienceRange(newValue as number[])
+										}
+										max={20}
+										min={0}
+										step={1}
+										color='primary'
+									/>
+								</Box>
+							</div>
+							<div className='w-[20%]'>
+								<Button
+									fullWidth
+									variant='contained'
+									onClick={handleFilter}
+									startIcon={<Filter size={16} />}
+									sx={{ py: 1.5 }}
+								>
+									Применить
+								</Button>
+							</div>
+							<div className='w-[15%]'>
+								<Button
+									fullWidth
+									variant='contained'
+									onClick={() => handleSeeAll()}
+									startIcon={<Filter size={16} />}
+									sx={{ py: 1.5 }}
+								>
+									See All
+								</Button>
+							</div>
+						</div>
+					</CardContent>
+				</Card>
+				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
+					{users
+						.filter(user => user.role === 'master')
+						.map(el => (
+							<div
+								key={el.id}
+								className='w-full p-2 transition-transform transform hover:-translate-y-1'
+							>
+								<Card
+									sx={{
+										borderRadius: '20px',
+										overflow: 'hidden',
+										position: 'relative',
+										backgroundColor: '#fefcfb', 
+										border: '1px solid #e7ddd2',
+										boxShadow: '0 8px 24px rgba(0,0,0,0.05)',
+										transition: 'all 0.3s ease-in-out',
+										'&:hover': {
+											boxShadow: '0 12px 32px rgba(0,0,0,0.1)',
+											transform: 'translateY(-4px)',
+										},
+									}}
+								>
+									<div
+										className='absolute top-3 right-3 z-10 cursor-pointer'
+										onClick={() => addToWish(el)}
+									>
+										{el.wish ? (
+											<StarIcon className='text-yellow-400 w-6 h-6 drop-shadow-md' />
+										) : (
+											<StarBorderIcon className='text-gray-300 w-6 h-6 hover:text-yellow-400 transition-colors duration-300' />
+										)}
+									</div>
 
-                {/* Аватар */}
-                <div className="flex flex-col items-center mb-4">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="relative w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden cursor-pointer ring-2 ring-[#f3e8ff] group-hover:ring-[#e9d5ff] transition-all"
-                    onClick={() => handleProfileById(el.id)}
-                  >
-                    <Image
-                      src={el.avatar || avatar}
-                      alt="avatar"
-                      fill
-                      className="object-cover"
-                      style={{ filter: 'drop-shadow(0 2px 4px rgba(107, 33, 168, 0.2))' }}
-                    />
-                  </motion.div>
-                </div>
+									<CardContent className='pb-2'>
+										<Box className='flex items-center gap-4'>
+                      <Link href={`/${el.id}`}>
+											<Image
+												src={el.avatar || avatar}
+												alt={el.name}
+												width={60}
+												height={60}
+												className='rounded-full bg-gray-100 border border-gray-300'
+											/>
+                      </Link>
+											<Box>
+												<Typography
+													variant='h6'
+													sx={{
+														fontWeight: 700,
+														color: '#5b3924',
+														fontSize: '1rem',
+													}}
+												>
+													{el.name}
+												</Typography>
+												<Typography
+													variant='body2'
+													sx={{ color: '#8b5e3c', fontWeight: 500 }}
+												>
+													{el.job}
+												</Typography>
+											</Box>
+										</Box>
+									</CardContent>
 
-                {/* Информация */}
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-[#6b21a8] mb-1">
-                    {el.surname} {el.name}
-                  </h3>
-                  <p className="text-sm text-[#9333ea] mb-2 font-medium">
-                    {el.job}
-                  </p>
-                  
-                  <div className="flex justify-center items-center gap-1 mb-3">
-                    <StarRatings
-                      rating={rating(el.review)}
-                      starRatedColor="#eab308"
-                      starEmptyColor="#e9d5ff"
-                      numberOfStars={5}
-                      starDimension="18px"
-                      starSpacing="2px"
-                      name="rating"
-                    />
-                    <span className="text-xs text-[#9333ea] ml-1 font-medium">
-                      ({el.review?.length || 0} отзывов)
-                    </span>
-                  </div>
+									<Box className='px-6 py-2 border-t border-b border-[#f1ebe6] bg-[#fcf9f6]'>
+										<Box className='flex items-center justify-between text-sm text-gray-600'>
+											<Box className='flex items-center gap-1'>
+												<Star/>
+												<span className='font-medium'>{el.rating}</span>
+												<span className='text-gray-400'>({el.review.length})</span>
+											</Box>
+											<Box className='flex items-center gap-1'>
+												<LocationOn sx={{ fontSize: 16, color: '#9ca3af' }} />
+												<span>{el.country}</span>
+											</Box>
+										</Box>
+									</Box>
 
-                  <div className="flex justify-between items-center text-sm px-4 mt-4">
-                    <span className="text-[#7e22ce] font-semibold bg-[#f3e8ff] px-3 py-1 rounded-full">
-                      {el.experience} {el.experience === 1 ? 'год' : 'года'}
-                    </span>
-                    <span className="text-[#7e22ce] font-semibold">
-                      {el.number}
-                    </span>
-                  </div>
-                </div>
+									<CardContent className='pt-2 text-sm text-gray-700'>
+										<Box className='flex justify-between items-center mb-2'>
+											<span className='text-gray-500'>Опыт:</span>
+											<span className='font-medium'>{el.experience} лет</span>
+										</Box>
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#fae8ff]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              </motion.div>
-            ))}
-        </aside>
-      </section>
-    </Main>
-  )
+										<Box className='flex justify-between items-center'>
+											<span className='text-gray-500'>Стоимость:</span>
+											<span className='font-bold text-green-600'>
+												от {el.price} сомони
+											</span>
+										</Box>
+									</CardContent>
+
+									<Box className='px-4 pb-4 pt-1'>
+										<Chip
+											label={el.status ? 'Доступен' : 'Занят'}
+											size='small'
+											sx={{
+												backgroundColor: el.status ? '#16a34a' : '#f59e0b',
+												color: 'white',
+												fontWeight: 500,
+												fontSize: '0.75rem',
+											}}
+										/>
+									</Box>
+								</Card>
+							</div>
+						))}
+				</div>
+
+				{users?.length === 0 && (
+					<Box sx={{ textAlign: 'center', py: 8 }}>
+						<Typography variant='h5' sx={{ color: '#6b7280', mb: 1 }}>
+							Мастера не найдены
+						</Typography>
+						<Typography variant='body1' sx={{ color: '#1f2937' }}>
+							Попробуйте изменить параметры поиска
+						</Typography>
+					</Box>
+				)}
+			</Container>
+		</Main>
+	)
 }
