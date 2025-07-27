@@ -12,23 +12,73 @@ import { Star, MapPin, Clock, Phone, Mail, MessageCircle } from 'lucide-react'
 import useZapros from '@/app/store/zapros'
 import avatar from '@/app/assets/avatar.png'
 import Image from 'next/image'
-
-
+import decode from '@/app/utils/axios-reguest'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useRouter } from 'next/navigation'
 
 export default function MasterProfilePage({
 	params,
 }: {
-	params: { 'master-by-id': string }
+	params: { id: string }
 }) {
-	const { getMasterById, masterById } = useZapros()
+  const router = useRouter()
+	const { getMasterById, masterById, sendReview, orderMaster, orderMasterComment } = useZapros()
 	const [newReview, setNewReview] = useState('')
-	const [newRating, setNewRating] = useState(5)
+	const [newRating, setNewRating] = useState(0)
+	const [open, setOpen] = useState(false)
+  const [comment, setComment] = useState('')
+
+	const handleClickOpen = () => {
+		setOpen(true)
+	}
+
+	const handleClose = () => {
+		setOpen(false)
+	}
 
 	const handleSubmitReview = (e: React.FormEvent) => {
 		e.preventDefault()
-		console.log('New review:', { rating: newRating, comment: newReview })
+		const newPreviews = {
+      id: decode.decode.id,
+			avatar: decode.decode.avatar,
+			name: decode.decode.name,
+			desc: newReview,
+			raiting: newRating,
+		}
+
+		sendReview(params['master-by-id'], newPreviews)
 		setNewReview('')
-		setNewRating(5)
+		setNewRating(0)
+	}
+
+	const reaiting = reviews => {
+		if (!reviews || reviews.length === 0) return 0
+		const sum = reviews.reduce((acc, review) => acc + (review.raiting || 0), 0)
+		return (sum / reviews.length).toFixed(1)
+	}
+
+	const handleOrderMaster = () => {
+		const order = {
+			...masterById,
+			order: true,
+      status: false
+		}
+
+    const commets = {
+      id: decode.decode.id,
+      avatar: decode.decode.avatar,
+      name: decode.decode.name,
+      text: comment
+    }
+
+		orderMaster(masterById.id, order)
+    orderMasterComment(masterById.id, commets)
+    setOpen(false)
+    router.push('/order')
 	}
 
 	useEffect(() => {
@@ -37,6 +87,25 @@ export default function MasterProfilePage({
 
 	return (
 		<div className='min-h-screen bg-gray-50 py-8'>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Каменити худро гузоред!!!"}
+        </DialogTitle>
+        <DialogContent>
+          <Textarea className='max-h-[250px] h-[120px] w-[500px]' placeholder='comment' value={comment} onChange={e => setComment(e.target.value)}></Textarea>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} className='bg-red-500 hover:text-red-600 hover:bg-transparent border border-red-500'>Баромад</Button>
+          <Button onClick={handleOrderMaster} className='text-red-500 hover:bg-red-600 bg-transparent border border-red-500 hover:text-white'>
+            Хидматро захира кунед
+          </Button>
+        </DialogActions>
+      </Dialog>
 			<div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
 				{/* Master Profile Card */}
 				<Card className='mb-8'>
@@ -61,7 +130,9 @@ export default function MasterProfilePage({
 								<div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
 									<div className='flex items-center justify-center md:justify-start space-x-2'>
 										<Star className='w-5 h-5 fill-yellow-400 text-yellow-400' />
-										<span className='font-medium'>{masterById.raiting}</span>
+										<span className='font-medium'>
+											{reaiting(masterById?.review)}
+										</span>
 										<span className='text-gray-500'>
 											({masterById?.review?.length} reviews)
 										</span>
@@ -109,7 +180,11 @@ export default function MasterProfilePage({
 								<MessageCircle className='w-4 h-4 mr-2' />
 								Бо устод тамос гиред
 							</Button>
-							<Button variant='outline' className='flex-1 bg-transparent'>
+							<Button
+								variant='outline'
+								className='flex-1 bg-transparent'
+								onClick={() => handleClickOpen()}
+							>
 								Хидматро захира кунед
 							</Button>
 						</div>

@@ -4,20 +4,13 @@ import axios from 'axios'
 export const useZapros = create((set, get) => ({
 	users: [],
 	masterById: [],
+	me: null,
 	getUsers: async () => {
 		try {
 			const { data } = await axios.get(
 				'https://334768101201ee08.mokky.dev/users'
 			)
 			set({ users: data })
-		} catch (error) {
-			console.error(error)
-		}
-	},
-	changeWishStatus: async (id, user) => {
-		try {
-			await axios.patch('https://334768101201ee08.mokky.dev/users/' + id, user)
-			get().getUsers()
 		} catch (error) {
 			console.error(error)
 		}
@@ -81,14 +74,6 @@ export const useZapros = create((set, get) => ({
 			console.error(error);
 		}
 	},
-	filterByName: async (name) => {
-		try {
-			const { data } = await axios.get('https://334768101201ee08.mokky.dev/users?name=' + name)
-			set({users: data})
-		} catch (error) {
-			console.error(error);
-		}
-	},
 	filterByCountry: async (country) => {
 		try {
 			const { data } = await axios.get('https://334768101201ee08.mokky.dev/users?country=' + country)
@@ -97,6 +82,44 @@ export const useZapros = create((set, get) => ({
 			console.error(error);
 		}
 	},
+	orderMaster: async (id, order) => {
+		try {
+			await axios.patch('https://334768101201ee08.mokky.dev/users/' + id, order)
+			get().getUsers()
+		} catch (error) {
+			console.error(error);
+		}
+	},
+	orderMasterComment: async (id, comment) => {
+		try {
+			const { data: user } = await axios.get(
+				`https://334768101201ee08.mokky.dev/users/${id}`
+			)
+			const comments = [...(user.comment || []), comment]
+
+			await axios.patch(`https://334768101201ee08.mokky.dev/users/${id}`, {
+				comment: comments,
+			})
+			get().getMasterById(id)
+		} catch (error) {
+			console.error(error)
+		}
+	},
+	editProfil: async (id, updateUser) => {
+		try {
+			await axios.patch('https://334768101201ee08.mokky.dev/users/' + id, updateUser)
+		} catch (error) {
+			console.error(error);
+		}
+	},
+	mee: async (id) => {
+		try {
+			const { data } = await axios.get('https://334768101201ee08.mokky.dev/users/' + id)
+			set({me: data})
+		} catch (error) {
+			console.error(error);
+		}
+	}
 }))
 
 export default useZapros

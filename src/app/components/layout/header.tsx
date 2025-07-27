@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -9,10 +9,24 @@ import { User, LogOut, Menu, X } from "lucide-react"
 import Image from 'next/image'
 import decode from '@/app/utils/axios-reguest'
 import avatar from '@/app/assets/avatar.png'
+import { useRouter } from 'next/navigation'
+import useZapros from '@/app/store/zapros'
+
 
 export default function Header() {
+  const { me, mee } = useZapros()
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(true) 
+  
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    router.push('/login')
+  }
+
+  useEffect(() => {
+    mee()
+  },[])
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -45,7 +59,7 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Image src={decode?.decode?.avatar || avatar} alt='salom' fill className='rounded-[50%] bg-gray-200'/>
+                    <Image src={me?.avatar || avatar} alt='salom' fill className='rounded-[50%] bg-gray-200'/>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -56,12 +70,12 @@ export default function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/orders" className="flex items-center">
+                    <Link href="/order" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
                       Фармоишҳо
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Баромад
                   </DropdownMenuItem>
@@ -103,7 +117,7 @@ export default function Header() {
                   <Link href="/profile" className="text-gray-700 hover:text-red-500 font-medium">
                     Профил
                   </Link>
-                  <Link href="/orders" className="text-gray-700 hover:text-red-500 font-medium">
+                  <Link href="/order" className="text-gray-700 hover:text-red-500 font-medium">
                     Фармоишҳо
                   </Link>
                   <button className="text-gray-700 hover:text-red-500 font-medium text-left">Баромад</button>

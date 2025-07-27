@@ -33,6 +33,12 @@ export default function HomePage() {
 	const [selectedProfession, setSelectedProfession] = useState('all')
 	const [selectedStatus, setSelectedStatus] = useState('all')
 
+  const reaiting = reviews => {
+		if (!reviews || reviews.length === 0) return 0
+		const sum = reviews.reduce((acc, review) => acc + (review.raiting || 0), 0)
+		return (sum / reviews.length).toFixed(1)
+	}
+
   useEffect(() => {
     getUsers()
   },[])
@@ -126,6 +132,7 @@ export default function HomePage() {
 
 					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
 						{users
+            .filter(el => el.role == 'master')
             .filter(el => JSON.stringify(el.name).toLowerCase().trim().includes(searchTerm.toLowerCase().trim()))?.map(master => (
 							<Card
 								key={master.id}
@@ -133,12 +140,6 @@ export default function HomePage() {
 							>
 								<CardContent className='p-6'>
 									<div className='flex flex-col items-center text-center'>
-										{/* <Avatar className='w-20 h-20 mb-4'>
-											<AvatarImage
-												src={master.avatar ? master.avatar : avatar}
-												alt={master.name}
-											/>
-										</Avatar> */}
                     <Image src={master.avatar ? master.avatar : avatar} alt={master.name} width={90} height={90} className='rounded-[50%] bg-gray-200 mb-4'/>
 
 										<h3 className='text-lg font-semibold mb-2'>
@@ -151,7 +152,7 @@ export default function HomePage() {
 										<div className='flex items-center space-x-1 mb-2'>
 											<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
 											<span className='text-sm font-medium'>
-												{master.raiting}
+												{reaiting(master.review)}
 											</span>
 											<span className='text-sm text-gray-500'>
 												({master?.review?.length || 0} баҳогузорӣ)
