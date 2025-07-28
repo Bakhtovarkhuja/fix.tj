@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
 	Dialog,
 	DialogContent,
@@ -19,6 +18,17 @@ import avatar from '@/app/assets/avatar.png'
 import Image from 'next/image'
 import decode from '@/app/utils/axios-reguest'
 
+type Order = {
+  id: number
+  avatar?: string | null
+  name: string
+  job: string
+  order: boolean
+  status: boolean
+  price: number
+}
+
+
 export default function OrdersPage() {
 	const { users, getUsers, sendReview, orderMaster } = useZapros()
 	const [reviewData, setReviewData] = useState({
@@ -26,37 +36,37 @@ export default function OrdersPage() {
 		comment: '',
 	})
 	const [isOpen, setIsOpen] = useState(false)
-	const [selectedOrder, setSelectedOrder] = useState<number | null>(null)
 
-	const handleSubmitReview = el => {
-		const newPreviews = {
-			id: decode.decode.id,
-			avatar: decode.decode.avatar,
-			name: decode.decode.name,
-			desc: reviewData.comment,
-			raiting: reviewData.rating,
-		}
+const handleSubmitReview = (el: Order) => {
+  const user = decode.decode as { id?: string; avatar?: string; name?: string }
 
-		const order = {
-			...el,
-			order: false,
-			status: true
-		}
+  const newReview = {
+    id: Number(user.id) || 0,
+    avatar: user.avatar ?? '',
+    author: user.name ?? '',
+    content: reviewData.comment,
+    rating: reviewData.rating,
+    date: new Date().toISOString(),
+  }
 
-		const id = el.id
+  const updatedOrder = {
+    ...el,
+    order: false,
+    status: true,
+  }
 
-		sendReview(id, newPreviews)
-		orderMaster(id, order)
-		setReviewData({
-			rating: 0,
-			comment: '',
-		})
-		setIsOpen(false)
-	}
+  sendReview(el.id, newReview)
+  orderMaster(el.id, updatedOrder)
+
+  setReviewData({ rating: 0, comment: '' })
+  setIsOpen(false)
+}
+
+
 
 	useEffect(() => {
 		getUsers()
-	}, [])
+	}, [getUsers])
 
 	return (
 		<div className='min-h-screen bg-gray-50 py-8'>
@@ -113,7 +123,6 @@ export default function OrdersPage() {
 												<DialogTrigger asChild>
 													<Button
 														className={'bg-red-500 hover:bg-red-600'}
-														onClick={() => setSelectedOrder(order.id)}
 													>
 														Баҳо гузоред
 													</Button>

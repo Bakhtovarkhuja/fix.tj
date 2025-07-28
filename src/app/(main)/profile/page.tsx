@@ -1,13 +1,10 @@
 'use client'
 
-import type React from 'react'
-
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Camera } from 'lucide-react'
 import avatar from '@/app/assets/avatar.png'
 import decode from '@/app/utils/axios-reguest'
@@ -15,9 +12,20 @@ import Image from 'next/image'
 import useZapros from '@/app/store/zapros'
 
 export default function ProfilePage() {
+	// If you are sure the payload has 'id', use type assertion:
+	const idUser = decode.decode as { id: string } // or number, depending on your backend
 	const { editProfil, me, mee } = useZapros()
 	const [isEditing, setIsEditing] = useState(false)
+
 	const [formData, setFormData] = useState({
+		name: '',
+		surname: '',
+		email: '',
+		phone: '',
+		avatar: '',
+	})
+
+	const [originalData, setOriginalData] = useState({
 		name: '',
 		surname: '',
 		email: '',
@@ -29,9 +37,19 @@ export default function ProfilePage() {
 		setFormData(prev => ({ ...prev, [field]: value }))
 	}
 
-	const handleSave = () => {
-		editProfil(me.id, formData)
-		console.log('Saving profile:', formData)
+	
+	const handleSave = async () => {
+		if (!me) return
+		await editProfil(me.id, {
+			...formData,
+			number: Number(formData.phone),
+		})
+		await mee(me.id)
+		setIsEditing(false)
+	}
+
+	const handleCloseAndRemoveAll = () => {
+		setFormData(originalData)
 		setIsEditing(false)
 	}
 
@@ -40,30 +58,36 @@ export default function ProfilePage() {
 		if (file) {
 			const reader = new FileReader()
 			reader.onload = e => {
-				setFormData(prev => ({ ...prev, avatar: e.target?.result as string }))
+				setFormData(prev => ({
+					...prev,
+					avatar: e.target?.result as string,
+				}))
 			}
 			reader.readAsDataURL(file)
 		}
 	}
 
 	useEffect(() => {
-		mee(decode.decode.id)
-	}, [])
+		if (idUser && idUser.id) {
+			mee(Number(idUser.id))
+		}
+	}, [idUser, mee])
 
 	useEffect(() => {
 		if (me) {
-			setFormData({
+			const userData = {
 				name: me.name || '',
 				surname: me.surname || '',
 				email: me.email || '',
-				phone: me.number || '',
+				phone: me.number?.toString() || '',
 				avatar: me.avatar || '',
-			})
+			}
+			setFormData(userData)
+			setOriginalData(userData)
 		}
 	}, [me])
 
-	if (!me) return <div className="text-center py-10">Загрузка профил...</div>
-
+	if (!me) return <div className="text-center py-10">Загрузка профиля...</div>
 
 	return (
 		<div className='min-h-screen bg-gray-50 py-8'>
@@ -75,15 +99,16 @@ export default function ProfilePage() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent className='space-y-6'>
-						{/* Avatar Section */}
+
+						{/* Аватар */}
 						<div className='flex flex-col items-center space-y-4'>
 							<div className='relative'>
 								<Image
 									src={formData.avatar || avatar}
-									alt='logo'
+									alt='Аватар'
 									width={120}
 									height={120}
-									className='rounded-[50%] bg-gray-200'
+									className='rounded-full bg-gray-200 object-cover'
 								/>
 								{isEditing && (
 									<label className='absolute bottom-0 right-0 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer'>
@@ -99,10 +124,10 @@ export default function ProfilePage() {
 							</div>
 						</div>
 
-						{/* Profile Form */}
+						{/* Форма */}
 						<div className='space-y-4'>
-							<div className='flex gap-[15px]'>
-								<div className='flex flex-col w-full gap-[5px]'>
+							<div className='flex gap-4'>
+								<div className='flex flex-col w-full gap-2'>
 									<Label htmlFor='name'>Ном</Label>
 									<Input
 										id='name'
@@ -112,10 +137,10 @@ export default function ProfilePage() {
 										disabled={!isEditing}
 									/>
 								</div>
-								<div className='flex flex-col w-full gap-[5px]'>
-									<Label htmlFor='name'>Насаб</Label>
+								<div className='flex flex-col w-full gap-2'>
+									<Label htmlFor='surname'>Насаб</Label>
 									<Input
-										id='name'
+										id='surname'
 										type='text'
 										value={formData.surname}
 										onChange={e => handleInputChange('surname', e.target.value)}
@@ -124,7 +149,7 @@ export default function ProfilePage() {
 								</div>
 							</div>
 
-							<div className='flex flex-col gap-[5px]'>
+							<div className='flex flex-col gap-2'>
 								<Label htmlFor='email'>Почтаи электронӣ</Label>
 								<Input
 									id='email'
@@ -135,7 +160,7 @@ export default function ProfilePage() {
 								/>
 							</div>
 
-							<div className='flex flex-col gap-[5px]'>
+							<div className='flex flex-col gap-2'>
 								<Label htmlFor='phone'>Телефон</Label>
 								<Input
 									id='phone'
@@ -147,7 +172,7 @@ export default function ProfilePage() {
 							</div>
 						</div>
 
-						{/* Action Buttons */}
+						{/* Кнопки */}
 						<div className='flex space-x-4'>
 							{isEditing ? (
 								<>
@@ -155,11 +180,11 @@ export default function ProfilePage() {
 										onClick={handleSave}
 										className='flex-1 bg-red-500 hover:bg-red-600'
 									>
-										Захираи тағйирот
+										Захира кардан
 									</Button>
 									<Button
 										variant='outline'
-										onClick={() => setIsEditing(false)}
+										onClick={handleCloseAndRemoveAll}
 										className='flex-1'
 									>
 										Бекор кардан

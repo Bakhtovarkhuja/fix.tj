@@ -35,7 +35,7 @@ export default function LoginPage() {
 		try {
 			const user = {
 				email: formData.email,
-				password: formData.password,
+				password: String(formData.password),
 			}
 
 			const res = await login(user)
@@ -49,7 +49,7 @@ export default function LoginPage() {
 			} else {
 				console.log('Неверный логин или пароль')
 			}
-		} catch (err) {
+		} catch  {
 			console.log('Ошибка при входе')
 		} finally {
 			console.log('error')

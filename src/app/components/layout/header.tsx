@@ -4,10 +4,14 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, LogOut, Menu, X } from "lucide-react"
 import Image from 'next/image'
 import decode from '@/app/utils/axios-reguest'
+import { JwtPayload } from "jwt-decode"
+
+interface MyJwtPayload extends JwtPayload {
+  id?: string
+}
 import avatar from '@/app/assets/avatar.png'
 import { useRouter } from 'next/navigation'
 import useZapros from '@/app/store/zapros'
@@ -18,15 +22,23 @@ export default function Header() {
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(true) 
-  
+  useEffect(() => {
+  const token = localStorage.getItem('access_token')
+  setIsLoggedIn(!!token)
+}, [])
+
+
   const handleLogout = () => {
     localStorage.removeItem('access_token')
     router.push('/login')
   }
 
   useEffect(() => {
-    mee()
-  },[])
+    const jwt = decode.decode as MyJwtPayload
+    if (jwt && jwt.id) {
+      mee(Number(jwt.id))
+    }
+  },[mee])
 
   return (
     <header className=" shadow-sm border-b sticky top-0 z-50 bg-[rgba(255,255,255,0.8)]">
