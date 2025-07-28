@@ -26,7 +26,7 @@ export default function MasterProfilePage({
 	params: { id: string }
 }) {
   const router = useRouter()
-	const { getMasterById, masterById, sendReview, orderMaster, orderMasterComment } = useZapros()
+	const { getMasterById, masterById, sendReview, orderMaster, orderMasterComment, mee, me } = useZapros()
 	const [newReview, setNewReview] = useState('')
 	const [newRating, setNewRating] = useState(0)
 	const [open, setOpen] = useState(false)
@@ -69,9 +69,9 @@ export default function MasterProfilePage({
 		}
 
     const commets = {
-      id: decode.decode.id,
-      avatar: decode.decode.avatar,
-      name: decode.decode.name,
+      id: me.id,
+      avatar: me.avatar,
+      name: me.name,
       text: comment
     }
 
@@ -83,6 +83,7 @@ export default function MasterProfilePage({
 
 	useEffect(() => {
 		getMasterById(params['master-by-id'])
+    mee(decode.decode.id, params['master-by-id'])
 	}, [])
 
 	return (
@@ -200,7 +201,6 @@ export default function MasterProfilePage({
 						<div className='space-y-6 overflow-y-scroll max-h-[50vh]'>
 							{masterById?.review?.map(review => (
 								<div
-									key={review.id}
 									className='border-b border-gray-200 pb-4 last:border-b-0'
 								>
 									<div className='flex items-center space-x-2 mb-2'>
