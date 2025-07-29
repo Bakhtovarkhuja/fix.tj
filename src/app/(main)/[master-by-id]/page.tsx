@@ -270,7 +270,7 @@ export default function MasterProfilePage() {
 										/>
 										<div className='flex flex-col gap-[5px]'>
 											<p className='font-medium'>{review.author}</p>
-											<div className='flex gap-[10px]'>
+											<div className='flex gap-[5px] items-center'>
 												{/* <div className='flex items-center'>
 													{[...Array(5)].map((_, i) => (
 														<Star
@@ -283,7 +283,9 @@ export default function MasterProfilePage() {
 														/>
 													))}
 												</div> */}
-												<p className='text-gray-500 text-sm'>{review.date}</p>
+												{/* <p className='text-gray-500 text-sm'>{review.date}</p> */}
+                        <Star className='w-[15px] fill-yellow-400 text-yellow-400'/>
+                        <p>({review?.rating})</p>
 											</div>
 										</div>
 									</div>
