@@ -24,19 +24,17 @@ type DecodedUser = {
 }
 
 type Review = {
-  id: number
-  raiting?: number
-  author?: string
-  date?: string
-  avatar?: string
-  content?: string
+	id: number
+	rating?: number
+	author?: string
+	date?: string
+	avatar?: string
+	content?: string
 }
 
-
-
 export default function MasterProfilePage() {
-  const param = useParams()
-  const params = param['master-by-id']
+	const param = useParams()
+	const params = param['master-by-id']
 	const decodedUser = decode.decode as DecodedUser | undefined
 	const userId = decodedUser?.id
 	const router = useRouter()
@@ -84,13 +82,11 @@ export default function MasterProfilePage() {
 		setNewRating(0)
 	}
 
-
 	const reaiting = (reviews: Review[]) => {
-  if (!reviews || reviews.length === 0) return 0
-  const sum = reviews.reduce((acc, review) => acc + (review.raiting || 0), 0)
-  return (sum / reviews.length).toFixed(1)
-}
-
+		if (!reviews || reviews.length === 0) return 0
+		const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0)
+		return (sum / reviews.length).toFixed(1)
+	}
 
 	const handleOrderMaster = () => {
 		const order = {
@@ -120,12 +116,11 @@ export default function MasterProfilePage() {
 	const decodedUsers = decode.decode as DecodedUser | undefined
 
 	useEffect(() => {
-  getMasterById(Number(params))
-  if (decodedUsers?.id !== undefined) {
-    mee(Number(decodedUsers.id))
-  }
-}, [getMasterById, mee, params, decodedUsers?.id])
-
+		getMasterById(Number(params))
+		if (decodedUsers?.id !== undefined) {
+			mee(Number(decodedUsers.id))
+		}
+	}, [getMasterById, mee, params, decodedUsers?.id])
 
 	return (
 		<div className='min-h-screen bg-gray-50 py-8'>
@@ -284,8 +279,8 @@ export default function MasterProfilePage() {
 													))}
 												</div> */}
 												{/* <p className='text-gray-500 text-sm'>{review.date}</p> */}
-                        <Star className='w-[15px] fill-yellow-400 text-yellow-400'/>
-                        <p>({review?.rating})</p>
+												<Star className='w-[15px] fill-yellow-400 text-yellow-400' />
+												{review?.rating && <p>({review.rating})</p>}
 											</div>
 										</div>
 									</div>
