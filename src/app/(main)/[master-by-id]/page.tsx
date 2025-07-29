@@ -24,7 +24,7 @@ type DecodedUser = {
 }
 
 type Review = {
-	id: number
+	id?: number
 	rating?: number
 	author?: string
 	date?: string
@@ -45,7 +45,7 @@ export default function MasterProfilePage() {
 		orderMaster,
 		orderMasterComment,
 		mee,
-		me,
+		me
 	} = useZapros()
 	const [newReview, setNewReview] = useState('')
 	const [newRating, setNewRating] = useState(0)
@@ -77,6 +77,7 @@ export default function MasterProfilePage() {
 			date: new Date().toISOString(),
 		}
 
+
 		sendReview(Number(params), newReviewObj)
 		setNewReview('')
 		setNewRating(0)
@@ -96,7 +97,9 @@ export default function MasterProfilePage() {
 		}
 
 		const commets = {
-			id: Date.now(), // or use a better unique id generator if available
+      id: Date.now(),
+			userId: me?.id,
+      commentId: Date.now(), 
 			content: comment,
 			author: me?.name || 'Unknown',
 			date: new Date().toISOString(),
@@ -259,26 +262,13 @@ export default function MasterProfilePage() {
 										<Image
 											src={review.avatar || avatar}
 											alt='logo'
-											width={40}
-											height={40}
+											width={50}
+											height={50}
 											className='rounded-[50%] bg-gray-200'
 										/>
-										<div className='flex flex-col gap-[5px]'>
+										<div className='flex flex-col'>
 											<p className='font-medium'>{review.author}</p>
 											<div className='flex gap-[5px] items-center'>
-												{/* <div className='flex items-center'>
-													{[...Array(5)].map((_, i) => (
-														<Star
-															key={i}
-															className={`w-4 h-4 ${
-																i < review.raiting
-																	? 'fill-yellow-400 text-yellow-400'
-																	: 'text-gray-300'
-															}`}
-														/>
-													))}
-												</div> */}
-												{/* <p className='text-gray-500 text-sm'>{review.date}</p> */}
 												<Star className='w-[15px] fill-yellow-400 text-yellow-400' />
 												{review?.rating && <p>({review.rating})</p>}
 											</div>

@@ -20,17 +20,24 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 export default function HomePage() {
-	const { users, getUsers } = useZapros()
+	const { users, getUsers, filterMasters } = useZapros()
 	const [searchTerm, setSearchTerm] = useState('')
-	const [selectedProfession, setSelectedProfession] = useState('all')
-	const [selectedStatus, setSelectedStatus] = useState('all')
+	const [selectedProfession, setSelectedProfession] = useState('')
+	const [selectedStatus, setSelectedStatus] = useState('')
 
 	const reaiting = (reviews: { rating?: number }[]) => {
-  if (!reviews || reviews.length === 0) return 0
-  const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0)
-  return (sum / reviews.length).toFixed(1)
-}
+		if (!reviews || reviews.length === 0) return 0
+		const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0)
+		return (sum / reviews.length).toFixed(1)
+	}
 
+	const handleFilterMaster = () => {
+    const Users = {
+      job: selectedProfession,
+      country: selectedStatus
+    }
+    filterMasters(Users)
+  }
 
 	useEffect(() => {
 		getUsers()
@@ -92,25 +99,32 @@ export default function HomePage() {
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value='all'>Ҳамаи касбҳо</SelectItem>
-									<SelectItem value='electrician'>Барқкаш</SelectItem>
-									<SelectItem value='plumber'>Лӯлакаш</SelectItem>
-									<SelectItem value='carpenter'>Наҷҷор</SelectItem>
-									<SelectItem value='mechanic'>Механик</SelectItem>
+									<SelectItem value='mekhanik'>Механик</SelectItem>
+									<SelectItem value='moshin'>Мошин</SelectItem>
+									<SelectItem value='electric'>Електрик</SelectItem>
+									<SelectItem value='asheiruzgor'>Асеи Рузгор</SelectItem>
 								</SelectContent>
 							</Select>
 
 							<Select value={selectedStatus} onValueChange={setSelectedStatus}>
 								<SelectTrigger className='w-full'>
-									<SelectValue placeholder='Дастрасӣ' />
+									<SelectValue placeholder='Шаҳрро интихоб кунед' />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value='all'>Ҳамаи ҳолатҳо</SelectItem>
-									<SelectItem value='available'>Дастрас</SelectItem>
-									<SelectItem value='busy'>Банд</SelectItem>
+									<SelectItem value='all'>Ҳамаи шаҳрҳо</SelectItem>
+									<SelectItem value='Dushanbe'>Душанбе</SelectItem>
+									<SelectItem value='Khujand'>Хучанд</SelectItem>
+									<SelectItem value='Bokhtar'>Бохтар</SelectItem>
+									<SelectItem value='Farkhor'>Фархор</SelectItem>
 								</SelectContent>
 							</Select>
 
-							<Button className='bg-red-500 hover:bg-red-600'>Ҷустуҷӯ</Button>
+							<Button
+								className='bg-red-500 hover:bg-red-600'
+								onClick={handleFilterMaster}
+							>
+								Ҷустуҷӯ
+							</Button>
 						</div>
 					</div>
 				</div>

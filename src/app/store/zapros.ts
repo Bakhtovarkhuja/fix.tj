@@ -50,9 +50,9 @@ interface ZaprosState {
 	orderMaster: (id: number, order: Partial<User>) => Promise<void>
 	editProfil: (id: number, updateUser: Partial<User>) => Promise<void>
 	mee: (id: number) => Promise<void>
-	filterByExperiense: (year: number) => Promise<void>
-	filterByJob: (job: string) => Promise<void>
-	filterByCountry: (country: string) => Promise<void>
+	removeComment: (userId: number, commentId: number) => Promise<void>
+  filterMasters: ({ job, country }: { job: string; country: string }) => Promise<void>
+
 }
 
 export const useZapros = create<ZaprosState>((set, get) => ({
@@ -153,7 +153,6 @@ export const useZapros = create<ZaprosState>((set, get) => ({
 			console.error(error)
 		}
 	},
-
 	mee: async id => {
 		try {
 			const { data } = await axios.get(
@@ -164,37 +163,38 @@ export const useZapros = create<ZaprosState>((set, get) => ({
 			console.error(error)
 		}
 	},
-	filterByExperiense: async year => {
-		try {
-			const { data } = await axios.get(
-				`https://334768101201ee08.mokky.dev/users?experience=${year}`
-			)
-			set({ users: data })
-		} catch (error) {
-			console.error(error)
-		}
-	},
-	filterByJob: async job => {
-		try {
-			const { data } = await axios.get(
-				`https://334768101201ee08.mokky.dev/users?job=${job}`
-			)
-			set({ users: data })
-		} catch (error) {
-			console.error(error)
-		}
-	},
+	filterMasters: async ({ job, country }) => {
+		const params = new URLSearchParams()
 
-	filterByCountry: async country => {
+		if (job && job !== 'all') params.append('job', job)
+		if (country && country !== 'all') params.append('country', country)
+
 		try {
 			const { data } = await axios.get(
-				`https://334768101201ee08.mokky.dev/users?country=${country}`
+				`https://334768101201ee08.mokky.dev/users?${params.toString()}`
 			)
 			set({ users: data })
 		} catch (error) {
 			console.error(error)
 		}
 	},
+  removeComment: async (userId, commentId) => {
+  try {
+    const res = await axios.get(`https://334768101201ee08.mokky.dev/users/${userId}`)
+    const user = res.data
+
+    const updatedComments = user.comment.filter((c: Comment) => c.id !== commentId)
+
+
+    await axios.patch(`https://334768101201ee08.mokky.dev/users/${userId}`, {
+      comment: updatedComments
+    })
+  } catch (error) {
+    console.error('Ошибка при удалении комментария:', error)
+  }
+}
+
+
 }))
 
 export default useZapros

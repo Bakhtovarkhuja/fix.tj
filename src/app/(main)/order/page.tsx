@@ -18,6 +18,13 @@ import avatar from '@/app/assets/avatar.png'
 import Image from 'next/image'
 import decode from '@/app/utils/axios-reguest'
 
+type Comment = {
+  id: number
+  content: string
+  author: string
+  date: string
+}
+
 type Order = {
   id: number
   avatar?: string | null
@@ -26,11 +33,14 @@ type Order = {
   order: boolean
   status: boolean
   price: number
+  comment?: Comment[]
 }
 
 
+
+
 export default function OrdersPage() {
-	const { users, getUsers, sendReview, orderMaster } = useZapros()
+	const { users, getUsers, sendReview, orderMaster, removeComment } = useZapros()
 	const [reviewData, setReviewData] = useState({
 		rating: 0,
 		comment: '',
@@ -49,17 +59,24 @@ const handleSubmitReview = (el: Order) => {
     date: new Date().toISOString(),
   }
 
-  const updatedOrder = {
+  const updatedOrder: Partial<Order> = {
     ...el,
     order: false,
     status: true,
   }
+
+  const userId = el.id
+  const commentId = el.comment?.[0]?.id  // обратите внимание, теперь .id, а не .commentId
 
   sendReview(el.id, newReview)
   orderMaster(el.id, updatedOrder)
 
   setReviewData({ rating: 0, comment: '' })
   setIsOpen(false)
+
+  if (commentId !== undefined) {
+    removeComment(userId, commentId)
+  }
 }
 
 
