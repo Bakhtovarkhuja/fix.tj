@@ -248,19 +248,24 @@ export default function ProfilePage() {
 													{order.author}
 												</span>
 												{order.date ? (
-  <>
-    <Calendar className='w-4 h-4' />
-    {new Date(order.date).toLocaleDateString('ru-RU')}
-    <Clock className='w-4 h-4 ml-2' />
-    {new Date(order.date).toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })}
-  </>
-) : (
-  <span>Дата отсутствует</span>
-)}
+													<div className='flex gap-[15px]'>
+													<div className='flex gap-[5px] items-center'>
 
+														<Calendar className='w-4 h-4' />
+														{new Date(order.date).toLocaleDateString('ru-RU')}
+													</div>
+													<div className='flex gap-[5px] items-center'>
+
+														<Clock className='w-4 h-4 ml-2' />
+														{new Date(order.date).toLocaleTimeString('ru-RU', {
+															hour: '2-digit',
+															minute: '2-digit',
+														})}
+														</div>
+													</div>
+												) : (
+													<span>Дата отсутствует</span>
+												)}
 											</div>
 										</div>
 
