@@ -1,220 +1,221 @@
-'use client'
-
-import avatar from '@/app/assets/avatar.png'
-import baner from '@/app/assets/baner.jpg'
-import useZapros from '@/app/store/zapros'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
-import { Clock, MapPin, Search, Star } from 'lucide-react'
+import { Section1 } from '../components/home/section-1'
+import sefity from '@/app/assets/safity.png'
+import review from '@/app/assets/review.png'
+import actual from '@/app/assets/actual.jpg'
 import Image from 'next/image'
+import Main from '../components/container/main'
+import { Section3 } from '../components/home/section-3'
+import {
+	BrickWall,
+	ClockArrowUp,
+	Earth,
+	Laptop,
+	Plus,
+	Shield,
+	Star,
+} from 'lucide-react'
+import { Section4 } from '../components/home/section-4'
+import {useTranslations} from 'next-intl';
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 
-export default function HomePage() {
-	const { users, getUsers, filterMasters } = useZapros()
-	const [searchTerm, setSearchTerm] = useState('')
-	const [selectedProfession, setSelectedProfession] = useState('')
-	const [selectedStatus, setSelectedStatus] = useState('')
-
-	const reaiting = (reviews: { rating?: number }[]) => {
-		if (!reviews || reviews.length === 0) return 0
-		const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0)
-		return (sum / reviews.length).toFixed(1)
-	}
-
-	const handleFilterMaster = () => {
-    const Users = {
-      job: selectedProfession,
-      country: selectedStatus
-    }
-    filterMasters(Users)
-  }
-
-	useEffect(() => {
-		getUsers()
-	}, [getUsers])
-
+export default function Home() {
+   const t = useTranslations('page');
 	return (
-		<div className='min-h-screen'>
-			{/* Hero Section */}
-			<section className='relative w-[100%] h-[600px] flex items-center justify-center overflow-hidden'>
-				<div className='absolute inset-0 bg-cover bg-center bg-no-repeat'>
-					<Image
-						src={baner}
-						alt='Banner'
-						fill
-						className='object-cover object-center absolute inset-0 z-0'
-					/>
-
-					<div className='absolute inset-0 bg-[rgba(0,0,0,0.5)] bg-opacity-50'></div>
-				</div>
-
-				<div className='relative z-10 text-center text-white max-w-4xl mx-auto px-4'>
-					<h1 className='text-5xl md:text-6xl font-bold mb-6'>
-						Устоҳони Моҳирро дар Тоҷикистон Пайдо Кунед
-					</h1>
-					<p className='text-xl md:text-2xl mb-8 text-gray-200'>
-						Бо мутахассисони ботаҷриба барои ҳамаи ниёзҳои хидматрасониятон
-						пайваст шавед
-					</p>
-					<Button
-						size='lg'
-						className='bg-red-500 hover:bg-red-600 text-lg px-8 py-3'
+		<>
+			<section className='bg-gray-900'>
+				<section className='w-[1200px] m-auto py-12 flex justify-between'>
+					<aside className='w-[50%] py-[40px] flex flex-col gap-[20px] items-start'>
+						<h2 className='text-3xl sm:text-5xl font-bold text-white mb-4'>
+							{t('1')}
+						</h2>
+						<p className='text-gray-400 text-lg sm:text-xl mb-6'>
+							{t('2')}
+						</p>
+						<Link
+							href='/master'
+							className='inline-block bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300'
+						>
+							Ёфтани усто
+						</Link>
+					</aside>
+					<aside className='w-[50%]'>
+						<Section1></Section1>
+					</aside>
+				</section>
+				<section className='bg-white py-12 px-4 sm:px-6 lg:px-8 pt-20'>
+					<div className='max-w-4xl mx-auto text-center'>
+						<h2 className='text-3xl font-bold text-gray-900 mb-4'>
+							Чаро TrustHub <span className='text-red-500'>FIX.TJ</span>-ро
+							интихоб кардан лозим аст?
+						</h2>
+						<p className='text-xl text-gray-700'>
+							Ҳар як ресурс бо диққат санҷида шуда, аз ҷониби ҷомеаи
+							мутахассисони мо тасдиқ мегардад.
+						</p>
+					</div>
+				</section>
+			</section>
+			<section className='max-w-[1200px] mx-auto flex flex-col md:flex-row gap-10 mb-10 px-4 p-8 rounded-2xl'>
+				{[
+					{
+						img: sefity,
+						width: 230,
+						title: 'Сифати санҷидашуда',
+						text: 'Ҳамаи манбаъҳо бодиққат санҷида шуда, аз ҷониби дастаи мо тасдиқ мегарданд.',
+					},
+					{
+						img: review,
+						width: 270,
+						title: 'Аз ҷониби ҷомеа баҳогузорӣ шудааст',
+						text: 'Баҳоҳо ва назари воқеӣ аз иштирокчиёни боэътимоди ҷомеа.',
+					},
+					{
+						img: actual,
+						width: 180,
+						title: 'Ҳамеша нав ва муосир',
+						text: 'Мазмуни тоза ва навсозии мунтазам, ки манбаъҳоро ҳамеша актуалӣ нигоҳ медорад.',
+					},
+				].map(({ img, width, title, text }, i) => (
+					<div
+						key={i}
+						className='flex flex-col items-center bg-gray-100 rounded-2xl p-8 
+                 shadow-md shadow-gray-900 hover:shadow-lg hover:shadow-gray-700 
+                 transition duration-300 transform hover:scale-105 w-full md:w-1/3'
 					>
-						Оғоз кунед
-					</Button>
-				</div>
-			</section>
-
-			{/* Search and Filter Section */}
-			<section className='py-12 bg-gray-50'>
-				<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-					<div className='bg-white rounded-lg shadow-lg p-6'>
-						<div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-							<div className='relative'>
-								<Search className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
-								<Input
-									placeholder='Ҷустуҷӯи устодон...'
-									value={searchTerm}
-									onChange={e => setSearchTerm(e.target.value)}
-									className='pl-10'
-								/>
-							</div>
-
-							<Select
-								value={selectedProfession}
-								onValueChange={setSelectedProfession}
-							>
-								<SelectTrigger className='w-full'>
-									<SelectValue placeholder='Касбро интихоб кунед' />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value='all'>Ҳамаи касбҳо</SelectItem>
-									<SelectItem value='mekhanik'>Механик</SelectItem>
-									<SelectItem value='moshin'>Мошин</SelectItem>
-									<SelectItem value='electric'>Електрик</SelectItem>
-									<SelectItem value='asheiruzgor'>Асеи Рузгор</SelectItem>
-								</SelectContent>
-							</Select>
-
-							<Select value={selectedStatus} onValueChange={setSelectedStatus}>
-								<SelectTrigger className='w-full'>
-									<SelectValue placeholder='Шаҳрро интихоб кунед' />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value='all'>Ҳамаи шаҳрҳо</SelectItem>
-									<SelectItem value='Dushanbe'>Душанбе</SelectItem>
-									<SelectItem value='Khujand'>Хучанд</SelectItem>
-									<SelectItem value='Bokhtar'>Бохтар</SelectItem>
-									<SelectItem value='Farkhor'>Фархор</SelectItem>
-								</SelectContent>
-							</Select>
-
-							<Button
-								className='bg-red-500 hover:bg-red-600'
-								onClick={handleFilterMaster}
-							>
-								Ҷустуҷӯ
-							</Button>
-						</div>
+						<Image
+							src={img}
+							width={width}
+							height={120}
+							alt='logo'
+							className='mb-6'
+						/>
+						<h3 className='text-xl font-semibold mb-3 text-center text-gray-900'>
+							{title}
+						</h3>
+						<p className='text-gray-700 text-center leading-relaxed'>{text}</p>
 					</div>
-				</div>
+				))}
 			</section>
-
-			{/* Masters Grid */}
-			<section className='py-12'>
-				<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-					<h2 className='text-3xl font-bold text-center mb-12'>
-						Устоҳони Дастрас
-					</h2>
-
-					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-						{users
-							.filter(el => el.role == 'master')
-							.filter(el =>
-								JSON.stringify(el.name)
-									.toLowerCase()
-									.trim()
-									.includes(searchTerm.toLowerCase().trim())
-							)
-							?.map(master => (
-								<Card
-									key={master.id}
-									className='card-shadow hover:shadow-lg transition-shadow duration-300'
+			<section className='bg-gray-900 py-20'>
+				<Main>
+					<section className='text-gray-900 flex flex-col items-center gap-8 max-w-6xl mx-auto px-4'>
+						<h2 className='text-3xl font-semibold text-white mb-6'>
+							Афзалиятҳои мо
+						</h2>
+						<aside className='flex gap-8 w-full justify-between flex-wrap'>
+							{[
+								{
+									icon: Star,
+									bg: 'bg-yellow-100',
+									iconColor: 'text-yellow-600',
+									label: 'Бозхурдҳои муштариёни мо',
+								},
+								{
+									icon: ClockArrowUp,
+									bg: 'bg-green-100',
+									iconColor: 'text-green-600',
+									label: 'Устоҳои мо корро дар вақти кӯтоҳ анҷом медиҳанд.',
+								},
+								{
+									icon: Shield,
+									bg: 'bg-blue-100',
+									iconColor: 'text-blue-600',
+									label: 'Сомонаи бехатар',
+								},
+								{
+									icon: Laptop,
+									bg: 'bg-green-100',
+									iconColor: 'text-green-600',
+									label: 'Сомона муосир',
+								},
+								{
+									icon: Earth,
+									bg: 'bg-blue-100',
+									iconColor: 'text-blue-600',
+									label: 'Глобалӣ',
+								},
+								{
+									icon: BrickWall,
+									bg: 'bg-yellow-100',
+									iconColor: 'text-yellow-600',
+									label: 'Беҳтарин устоҳо',
+								},
+							].map(({ icon: Icon, bg, iconColor, label }, i) => (
+								<div
+									key={i}
+									className='flex items-center gap-4 bg-white rounded-2xl p-6 shadow-lg
+                   w-full sm:w-[48%] md:w-[30%]
+                   transform transition-transform duration-300 hover:scale-105 cursor-pointer'
 								>
-									<CardContent className='p-6'>
-										<div className='flex flex-col items-center text-center'>
-											<Image
-												src={master.avatar ? master.avatar : avatar}
-												alt={master.name}
-												width={90}
-												height={90}
-												className='rounded-[50%] bg-gray-200 mb-4'
-											/>
-
-											<h3 className='text-lg font-semibold mb-2'>
-												{master.name}
-											</h3>
-											<p className='text-red-500 font-medium mb-2'>
-												{master.job}
-											</p>
-
-											<div className='flex items-center space-x-1 mb-2'>
-												<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
-												<span className='text-sm font-medium'>
-													{reaiting(master.review)}
-												</span>
-												<span className='text-sm text-gray-500'>
-													({master?.review?.length || 0} баҳогузорӣ)
-												</span>
-											</div>
-
-											<div className='flex items-center space-x-1 mb-2'>
-												<Clock className='w-4 h-4 text-gray-400' />
-												<span className='text-sm text-gray-600'>
-													{master.experience} сол
-												</span>
-											</div>
-
-											<div className='flex items-center space-x-1 mb-4'>
-												<MapPin className='w-4 h-4 text-gray-400' />
-												<span className='text-sm text-gray-600'>
-													{master.country}
-												</span>
-											</div>
-
-											<Badge
-												variant={master.status ? 'default' : 'secondary'}
-												className={
-													master.status ? 'bg-green-500 hover:bg-green-600' : ''
-												}
-											>
-												{master.status ? 'Дастрас' : 'Банд'}
-											</Badge>
-
-											<Button
-												asChild
-												className='w-full mt-4 bg-red-500 hover:bg-red-600'
-												disabled={master.status}
-											>
-												<Link href={`/${master.id}`}>Дидани профил</Link>
-											</Button>
-										</div>
-									</CardContent>
-								</Card>
+									<div
+										className={`${bg} p-4 rounded-xl flex items-center justify-center shadow-md`}
+									>
+										<Icon className={`${iconColor} w-8 h-8`} />
+									</div>
+									<b className='text-lg leading-tight'>{label}</b>
+								</div>
 							))}
-					</div>
+						</aside>
+					</section>
+				</Main>
+			</section>
+			<Main>
+				<section className='h-[70vh]'>
+					<Section3></Section3>
+				</section>
+			</Main>
+			<section className='bg-gray-900 mt-[40px] py-[40px]'>
+				<Main>
+					<section className='flex justify-between'>
+						<aside className='w-[50%] py-[40px] flex flex-col gap-[20px] items-start'>
+							<h2 className='text-3xl sm:text-5xl font-bold text-white mb-4'>
+								Ба шабакаи боэътимоди{' '}
+								<span className='text-red-500'>FIX.TJ</span> ҳамроҳ шавед
+							</h2>
+							<p className='text-gray-400 text-lg sm:text-xl mb-6'>
+								Қисме аз ҷомеаи мутахассисони санҷидашуда, хизматрасониҳо ва
+								платформаҳо шавед. Мо якҷоя интернетеро эҷод мекунем, ки дар он
+								сифат, аслӣ ва боэътимодӣ қадр карда мешаванд. Нашр кунед,
+								мубодила намоед ва ба дигарон дар ёфтани манбаъҳои воқеан
+								арзишманд кӯмак расонед.
+							</p>
+							<Link
+								href='/register'
+								className='flex gap-[10px] bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300'
+							>
+								<Plus></Plus> Бақайдгирӣ кунед
+							</Link>
+						</aside>
+						<aside className='w-[50%]'>
+							<Section4></Section4>
+						</aside>
+					</section>
+				</Main>
+			</section>
+			<section className='bg-white py-40 px-4 sm:px-6 lg:px-8 pt-40'>
+				<div className='max-w-4xl mx-auto text-center'>
+					<h2 className='text-3xl font-bold text-gray-900 mb-4'>
+						Омодаед, ки оғоз кунед?
+					</h2>
+					<p className='text-xl text-gray-700'>
+						Ба ҳазорон корбарон ва мутахассисоне, ки аллакай{' '}
+						<span className='text-red-500'>
+							<b> FIX.TJ</b>
+						</span>
+						-ро барои ҷустуҷӯи устоҳои санҷидашуда, хизматрасониҳо ва манбаъҳо
+						интихоб мекунанд, ҳамроҳ шавед. <br /> Бо эътимод оғоз кунед — бо{' '}
+						<span className='text-red-500'>
+							<b> FIX.TJ</b>
+						</span>{' '}
+						оғоз кунед.
+					</p>
+          <Link href={'/master'}>
+					<button className='bg-red-500 text-white py-[10px] px-[18px] mt-[15px] rounded-[15px]'>
+						Оғоз кардан
+					</button>
+          </Link>
 				</div>
 			</section>
-		</div>
+		</>
 	)
 }

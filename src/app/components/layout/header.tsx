@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { User, LogOut, Menu, X } from "lucide-react"
@@ -15,6 +14,7 @@ interface MyJwtPayload extends JwtPayload {
 import avatar from '@/app/assets/avatar.png'
 import { useRouter } from 'next/navigation'
 import useZapros from '@/app/store/zapros'
+import Link from 'next/link'
 
 
 export default function Header() {
@@ -57,8 +57,8 @@ export default function Header() {
             <Link href="/" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
               АСОСӢ
             </Link>
-            <Link href="/products" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
-              МАҲСУЛОТ
+            <Link href="/master" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
+              УСТОХО
             </Link>
             <Link href="/about" className="text-gray-700 hover:text-red-500 font-medium transition-colors">
               ДАР БОРАИ МО
@@ -118,8 +118,8 @@ export default function Header() {
               <Link href="/" className="text-gray-700 hover:text-red-500 font-medium">
                 АСОСӢ
               </Link>
-              <Link href="/products" className="text-gray-700 hover:text-red-500 font-medium">
-                МАҲСУЛОТ
+              <Link href="/master" className="text-gray-700 hover:text-red-500 font-medium">
+                УСТОХО
               </Link>
               <Link href="/about" className="text-gray-700 hover:text-red-500 font-medium">
                 ДАР БОРАИ МО
