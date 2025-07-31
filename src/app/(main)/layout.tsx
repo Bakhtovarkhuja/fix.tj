@@ -1,19 +1,20 @@
-import { ReactNode } from 'react'
-import Header from '../components/layout/header'
 import Footer from '../components/layout/footer'
+import Header from '../components/layout/header'
 
-interface MainLayoutProps {
-  children: ReactNode
-}
+export default async function LocaleLayout({
+	children,
+}: {
+	children: React.ReactNode
+	params: Promise<{ locale: string }>
+}) {
 
-export default function MainLayout({ children }: MainLayoutProps) {
-  return (
-    <>
-      <Header />
-      
-        {children}
-     
-      <Footer/>
-    </>
-  )
+	return (
+		<html>
+			<body>
+				<Header></Header>
+				{children}
+				<Footer></Footer>
+			</body>
+		</html>
+	)
 }

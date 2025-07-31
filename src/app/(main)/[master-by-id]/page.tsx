@@ -16,6 +16,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useParams, useRouter } from 'next/navigation'
+import { CoolMode } from '@/components/magicui/cool-mode'
 
 type DecodedUser = {
 	id?: number
@@ -45,7 +46,7 @@ export default function MasterProfilePage() {
 		orderMaster,
 		orderMasterComment,
 		mee,
-		me
+		me,
 	} = useZapros()
 	const [newReview, setNewReview] = useState('')
 	const [newRating, setNewRating] = useState(0)
@@ -77,7 +78,6 @@ export default function MasterProfilePage() {
 			date: new Date().toISOString(),
 		}
 
-
 		sendReview(Number(params), newReviewObj)
 		setNewReview('')
 		setNewRating(0)
@@ -97,9 +97,9 @@ export default function MasterProfilePage() {
 		}
 
 		const commets = {
-      id: Date.now(),
+			id: Date.now(),
 			userId: me?.id,
-      commentId: Date.now(), 
+			commentId: Date.now(),
 			content: comment,
 			author: me?.name || 'Unknown',
 			date: new Date().toISOString(),
@@ -145,18 +145,22 @@ export default function MasterProfilePage() {
 					></Textarea>
 				</DialogContent>
 				<DialogActions>
-					<Button
-						onClick={handleClose}
-						className='bg-red-500 hover:text-red-600 hover:bg-transparent border border-red-500'
-					>
-						Баромад
-					</Button>
-					<Button
-						onClick={handleOrderMaster}
-						className='text-red-500 hover:bg-red-600 bg-transparent border border-red-500 hover:text-white'
-					>
-						Хидматро захира кунед
-					</Button>
+					<CoolMode>
+						<Button
+							onClick={handleClose}
+							className='bg-red-500 hover:text-red-600 hover:bg-transparent border border-red-500'
+						>
+							Баромад
+						</Button>
+					</CoolMode>
+					<CoolMode>
+						<Button
+							onClick={handleOrderMaster}
+							className='text-red-500 hover:bg-red-600 bg-transparent border border-red-500 hover:text-white'
+						>
+							Хидматро захира кунед
+						</Button>
+					</CoolMode>
 				</DialogActions>
 			</Dialog>
 			<div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -229,20 +233,21 @@ export default function MasterProfilePage() {
 								</div>
 							</div>
 						</div>
-
-						<div className='flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-8'>
-							<Button className='bg-red-500 hover:bg-red-600 flex-1'>
-								<MessageCircle className='w-4 h-4 mr-2' />
-								Бо устод тамос гиред
-							</Button>
-							<Button
-								variant='outline'
-								className='flex-1 bg-transparent'
-								onClick={() => handleClickOpen()}
-							>
-								Хидматро захира кунед
-							</Button>
-						</div>
+						<CoolMode>
+							<div className='flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-8'>
+								<Button className='bg-red-500 hover:bg-red-600 flex-1'>
+									<MessageCircle className='w-4 h-4 mr-2' />
+									Бо устод тамос гиред
+								</Button>
+								<Button
+									variant='outline'
+									className='flex-1 bg-transparent'
+									onClick={() => handleClickOpen()}
+								>
+									Хидматро захира кунед
+								</Button>
+							</div>
+						</CoolMode>
 					</CardContent>
 				</Card>
 
@@ -318,10 +323,11 @@ export default function MasterProfilePage() {
 										required
 									/>
 								</div>
-
-								<Button type='submit' className='bg-red-500 hover:bg-red-600'>
-									Пешниҳоди баҳо
-								</Button>
+								<CoolMode>
+									<Button type='submit' className='bg-red-500 hover:bg-red-600'>
+										Пешниҳоди баҳо
+									</Button>
+								</CoolMode>
 							</form>
 						</div>
 					</CardContent>

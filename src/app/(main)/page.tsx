@@ -1,10 +1,7 @@
-import { Section1 } from '../components/home/section-1'
-import sefity from '@/app/assets/safity.png'
-import review from '@/app/assets/review.png'
 import actual from '@/app/assets/actual.jpg'
-import Image from 'next/image'
-import Main from '../components/container/main'
-import { Section3 } from '../components/home/section-3'
+import review from '@/app/assets/review.png'
+import sefity from '@/app/assets/safity.png'
+import { CoolMode } from '@/components/magicui/cool-mode'
 import {
 	BrickWall,
 	ClockArrowUp,
@@ -14,29 +11,34 @@ import {
 	Shield,
 	Star,
 } from 'lucide-react'
-import { Section4 } from '../components/home/section-4'
-import {useTranslations} from 'next-intl';
+import Image from 'next/image'
 import Link from 'next/link'
+import Main from '../components/container/main'
+import { Section1 } from '../components/home/section-1'
+import { Section4 } from '../components/home/section-4'
+import { Section6 } from '../components/home/section-6'
 
 export default function Home() {
-   const t = useTranslations('page');
 	return (
 		<>
 			<section className='bg-gray-900'>
-				<section className='w-[1200px] m-auto py-12 flex justify-between'>
+				<section className='w-[1200px] m-auto py-12 flex justify-between items-center'>
 					<aside className='w-[50%] py-[40px] flex flex-col gap-[20px] items-start'>
-						<h2 className='text-3xl sm:text-5xl font-bold text-white mb-4'>
-							{t('1')}
+						<h2 className='text-3xl sm:text-4xl font-bold text-white mb-4'>
+							Ба мутахассисон эътимод кунед — беҳтарин устоҳо дар як ҷо
 						</h2>
 						<p className='text-gray-400 text-lg sm:text-xl mb-6'>
-							{t('2')}
+							Каталог опытных специалистов и надежных сервисов. Всё, что вам
+							нужно — в одном месте, удобно и безопасно.
 						</p>
-						<Link
-							href='/master'
-							className='inline-block bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300'
-						>
-							Ёфтани усто
-						</Link>
+						<CoolMode>
+							<Link
+								href='/master'
+								className='inline-block bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300'
+							>
+								Ёфтани усто
+							</Link>
+						</CoolMode>
 					</aside>
 					<aside className='w-[50%]'>
 						<Section1></Section1>
@@ -45,8 +47,8 @@ export default function Home() {
 				<section className='bg-white py-12 px-4 sm:px-6 lg:px-8 pt-20'>
 					<div className='max-w-4xl mx-auto text-center'>
 						<h2 className='text-3xl font-bold text-gray-900 mb-4'>
-							Чаро TrustHub <span className='text-red-500'>FIX.TJ</span>-ро
-							интихоб кардан лозим аст?
+							Чаро <span className='text-red-500'>FIX.TJ</span>-ро интихоб
+							кардан лозим аст?
 						</h2>
 						<p className='text-xl text-gray-700'>
 							Ҳар як ресурс бо диққат санҷида шуда, аз ҷониби ҷомеаи
@@ -79,7 +81,7 @@ export default function Home() {
 					<div
 						key={i}
 						className='flex flex-col items-center bg-gray-100 rounded-2xl p-8 
-                 shadow-md shadow-gray-900 hover:shadow-lg hover:shadow-gray-700 
+                 shadow-md shadow-gray-400 hover:shadow-lg hover:shadow-gray-700 
                  transition duration-300 transform hover:scale-105 w-full md:w-1/3'
 					>
 						<Image
@@ -159,12 +161,10 @@ export default function Home() {
 					</section>
 				</Main>
 			</section>
-			<Main>
-				<section className='h-[70vh]'>
-					<Section3></Section3>
-				</section>
-			</Main>
-			<section className='bg-gray-900 mt-[40px] py-[40px]'>
+			<section className='h-[70vh]'>
+				<Section6></Section6>
+			</section>
+			<section className='bg-gray-900 mt-[140px] py-[40px]'>
 				<Main>
 					<section className='flex justify-between'>
 						<aside className='w-[50%] py-[40px] flex flex-col gap-[20px] items-start'>
@@ -179,12 +179,14 @@ export default function Home() {
 								мубодила намоед ва ба дигарон дар ёфтани манбаъҳои воқеан
 								арзишманд кӯмак расонед.
 							</p>
-							<Link
-								href='/register'
-								className='flex gap-[10px] bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300'
-							>
-								<Plus></Plus> Бақайдгирӣ кунед
-							</Link>
+							<CoolMode>
+								<Link
+									href='/register'
+									className='flex gap-[10px] bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300'
+								>
+									<Plus></Plus> Бақайдгирӣ кунед
+								</Link>
+							</CoolMode>
 						</aside>
 						<aside className='w-[50%]'>
 							<Section4></Section4>
@@ -209,11 +211,13 @@ export default function Home() {
 						</span>{' '}
 						оғоз кунед.
 					</p>
-          <Link href={'/master'}>
-					<button className='bg-red-500 text-white py-[10px] px-[18px] mt-[15px] rounded-[15px]'>
-						Оғоз кардан
-					</button>
-          </Link>
+					<Link href={'/master'}>
+						<CoolMode>
+							<button className='bg-red-500 hover:bg-red-600 cursor-pointer text-white py-[10px] px-[18px] mt-[15px] rounded-[15px]'>
+								Оғоз кардан
+							</button>
+						</CoolMode>
+					</Link>
 				</div>
 			</section>
 		</>
