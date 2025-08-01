@@ -12,10 +12,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { JwtPayload } from 'jwt-decode'
 import { LogOut, Menu, User, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface MyJwtPayload extends JwtPayload {
@@ -24,10 +24,14 @@ interface MyJwtPayload extends JwtPayload {
 
 export default function Header() {
 	const t = useTranslations('header')
-	const { me, mee } = useZapros()
+	const locale = useLocale()
+	const pathname = usePathname()
 	const router = useRouter()
+
+	const { me, mee } = useZapros()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	const [isLoggedIn, setIsLoggedIn] = useState(true)
+
 	useEffect(() => {
 		const token = localStorage.getItem('access_token')
 		setIsLoggedIn(!!token)
@@ -45,60 +49,58 @@ export default function Header() {
 		}
 	}, [mee])
 
+	const changeLocale = (newLocale: string) => {
+		const pathWithoutLocale = pathname.replace(/^\/(ru|en|tj)/, '')
+		router.replace(`/${newLocale}${pathWithoutLocale}`)
+	}
+
 	return (
-		<header className=' shadow-sm border-b sticky top-0 z-50 bg-[rgba(255,255,255,0.8)]'>
+		<header className='shadow-sm border-b sticky top-0 z-50 bg-[rgba(255,255,255,0.8)]'>
 			<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
 				<div className='flex justify-between items-center h-16'>
 					{/* Logo */}
-					<>
-						<Link href='/' className='flex items-center space-x-2'>
-							<div className='w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center'>
-								<span className='text-white font-bold text-xl'>F</span>
-							</div>
-							<span className='text-2xl font-bold text-red-500'>FIX.TJ</span>
-						</Link>
-					</>
+					<Link href='/' className='flex items-center space-x-2'>
+						<div className='w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center'>
+							<span className='text-white font-bold text-xl'>F</span>
+						</div>
+						<span className='text-2xl font-bold text-red-500'>FIX.TJ</span>
+					</Link>
 
 					{/* Desktop Navigation */}
 					<nav className='hidden md:flex items-center space-x-8'>
-						<>
-							<div className='hidden md:flex items-center space-x-8'>
-								<Link
-									href='/'
-									className='text-gray-700 hover:text-red-500 font-medium transition-colors'
-								>
-									{t('1')}
-								</Link>
-								<Link
-									href='/master'
-									className='text-gray-700 hover:text-red-500 font-medium transition-colors'
-								>
-									{t('2')}
-								</Link>
-								<Link
-									href='/about'
-									className='text-gray-700 hover:text-red-500 font-medium transition-colors'
-								>
-									{t('3')}
-								</Link>
-							</div>
-						</>
+						<Link href='/' className='text-gray-700 hover:text-red-500 font-medium'>
+							{t('1')}
+						</Link>
+						<Link href='/master' className='text-gray-700 hover:text-red-500 font-medium'>
+							{t('2')}
+						</Link>
+						<Link href='/about' className='text-gray-700 hover:text-red-500 font-medium'>
+							{t('3')}
+						</Link>
 					</nav>
 
 					{/* Profile Menu / Auth Buttons */}
 					<div className='hidden md:flex items-center space-x-4'>
+						{/* Language Select */}
+						<select
+							value={locale}
+							onChange={(e) => changeLocale(e.target.value)}
+							className='border rounded-md text-sm px-2 py-1'
+						>
+							<option value='ru'>🇷🇺 Русский</option>
+							<option value='tj'>🇹🇯 Тоҷикӣ</option>
+							<option value='en'>🇬🇧 English</option>
+						</select>
+
 						{isLoggedIn ? (
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
-									<Button
-										variant='ghost'
-										className='relative h-10 w-10 rounded-full'
-									>
+									<Button variant='ghost' className='relative h-10 w-10 rounded-full'>
 										<Image
 											src={me?.avatar || avatar}
-											alt='salom'
+											alt='avatar'
 											fill
-											className='rounded-[50%] bg-gray-200'
+											className='rounded-full bg-gray-200 object-cover'
 										/>
 									</Button>
 								</DropdownMenuTrigger>
@@ -122,8 +124,62 @@ export default function Header() {
 								</DropdownMenuContent>
 							</DropdownMenu>
 						) : (
-							<>
-								<div className='flex items-center space-x-2'>
+							<div className='flex items-center space-x-2'>
+								<Button variant='outline' asChild>
+									<Link href='/login'>{t('7')}</Link>
+								</Button>
+								<Button asChild className='bg-red-500 hover:bg-red-600'>
+									<Link href='/register'>{t('8')}</Link>
+								</Button>
+							</div>
+						)}
+					</div>
+
+					{/* Mobile Menu Button */}
+					<Button variant='ghost' className='md:hidden' onClick={() => setIsMenuOpen(!isMenuOpen)}>
+						{isMenuOpen ? <X className='h-6 w-6' /> : <Menu className='h-6 w-6' />}
+					</Button>
+				</div>
+
+				{/* Mobile Menu */}
+				{isMenuOpen && (
+					<div className='md:hidden py-4 border-t'>
+						<nav className='flex flex-col space-y-4'>
+							<Link href='/' className='text-gray-700 hover:text-red-500 font-medium'>
+								{t('1')}
+							</Link>
+							<Link href='/master' className='text-gray-700 hover:text-red-500 font-medium'>
+								{t('2')}
+							</Link>
+							<Link href='/about' className='text-gray-700 hover:text-red-500 font-medium'>
+								{t('3')}
+							</Link>
+							<select
+								value={locale}
+								onChange={(e) => changeLocale(e.target.value)}
+								className='border rounded-md text-sm px-2 py-1 w-fit'
+							>
+								<option value='ru'>Русский</option>
+								<option value='tj'>Тоҷикӣ</option>
+								<option value='en'>English</option>
+							</select>
+							{isLoggedIn ? (
+								<>
+									<Link href='/profile' className='text-gray-700 hover:text-red-500 font-medium'>
+										{t('4')}
+									</Link>
+									<Link href='/order' className='text-gray-700 hover:text-red-500 font-medium'>
+										{t('5')}
+									</Link>
+									<button
+										onClick={handleLogout}
+										className='text-gray-700 hover:text-red-500 font-medium text-left'
+									>
+										{t('6')}
+									</button>
+								</>
+							) : (
+								<div className='flex flex-col space-y-2'>
 									<Button variant='outline' asChild>
 										<Link href='/login'>{t('7')}</Link>
 									</Button>
@@ -131,77 +187,8 @@ export default function Header() {
 										<Link href='/register'>{t('8')}</Link>
 									</Button>
 								</div>
-							</>
-						)}
-					</div>
-
-					{/* Mobile Menu Button */}
-					<Button
-						variant='ghost'
-						className='md:hidden'
-						onClick={() => setIsMenuOpen(!isMenuOpen)}
-					>
-						{isMenuOpen ? (
-							<X className='h-6 w-6' />
-						) : (
-							<Menu className='h-6 w-6' />
-						)}
-					</Button>
-				</div>
-
-				{/* Mobile Menu */}
-				{isMenuOpen && (
-					<div className='md:hidden py-4 border-t'>
-						<>
-							<nav className='flex flex-col space-y-4'>
-								<Link
-									href='/'
-									className='text-gray-700 hover:text-red-500 font-medium'
-								>
-									{t('1')}
-								</Link>
-								<Link
-									href='/master'
-									className='text-gray-700 hover:text-red-500 font-medium'
-								>
-									{t('2')}
-								</Link>
-								<Link
-									href='/about'
-									className='text-gray-700 hover:text-red-500 font-medium'
-								>
-									{t('3')}
-								</Link>
-								{isLoggedIn ? (
-									<>
-										<Link
-											href='/profile'
-											className='text-gray-700 hover:text-red-500 font-medium'
-										>
-											{t('4')}
-										</Link>
-										<Link
-											href='/order'
-											className='text-gray-700 hover:text-red-500 font-medium'
-										>
-											{t('5')}
-										</Link>
-										<button className='text-gray-700 hover:text-red-500 font-medium text-left'>
-											{t('6')}
-										</button>
-									</>
-								) : (
-									<div className='flex flex-col space-y-2'>
-										<Button variant='outline' asChild>
-											<Link href='/login'>{t('7')}</Link>
-										</Button>
-										<Button asChild className='bg-red-500 hover:bg-red-600'>
-											<Link href='/register'>{t('8')}</Link>
-										</Button>
-									</div>
-								)}
-							</nav>
-						</>
+							)}
+						</nav>
 					</div>
 				)}
 			</div>
